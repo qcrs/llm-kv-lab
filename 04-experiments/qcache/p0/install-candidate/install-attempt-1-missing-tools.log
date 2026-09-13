@@ -1,0 +1,49 @@
+QCache Q1-00-002 vLLM install
+source=/home/qcrs/learning/llm-kv-lab/third_party/vllm
+environment=/home/qcrs/learning/llm-kv-lab/.venvs/vllm-v026-torch211-cu129-py310
+CUDA_HOME=/usr/local/cuda-12.1
+VLLM_PRECOMPILED_WHEEL_COMMIT=568afb3a13806beb53bb2e6bd518269357b237c0
+VLLM_PRECOMPILED_WHEEL_VARIANT=cu129
+Using CPython 3.10.20 interpreter at: /home/qcrs/.conda/envs/learning/bin/python3
+Creating virtual environment at: .venvs/vllm-v026-torch211-cu129-py310
+Activate with: source .venvs/vllm-v026-torch211-cu129-py310/bin/activate
+Using Python 3.10.20 environment at: .venvs/vllm-v026-torch211-cu129-py310
+  × Failed to build `vllm @
+  │ file:///home/qcrs/learning/llm-kv-lab/third_party/vllm`
+  ├─▶ The build backend returned an error
+  ╰─▶ Call to `setuptools.build_meta.build_editable` failed (exit status: 1)
+
+      [stderr]
+      /home/qcrs/learning/llm-kv-lab/.cache/uv/builds-v0/.tmpJBvTtW/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py:307:
+      UserWarning: Failed to initialize NumPy: No module named 'numpy'
+      (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+        cpu = _conversion_method_template(device=torch.device("cpu"))
+      Traceback (most recent call last):
+        File "<string>", line 14, in <module>
+        File
+      "/home/qcrs/learning/llm-kv-lab/.cache/uv/builds-v0/.tmpJBvTtW/lib/python3.10/site-packages/setuptools/build_meta.py",
+      line 479, in get_requires_for_build_editable
+          return self.get_requires_for_build_wheel(config_settings)
+        File
+      "/home/qcrs/learning/llm-kv-lab/.cache/uv/builds-v0/.tmpJBvTtW/lib/python3.10/site-packages/setuptools/build_meta.py",
+      line 333, in get_requires_for_build_wheel
+          return self._get_build_requires(config_settings, requirements=[])
+        File
+      "/home/qcrs/learning/llm-kv-lab/.cache/uv/builds-v0/.tmpJBvTtW/lib/python3.10/site-packages/setuptools/build_meta.py",
+      line 301, in _get_build_requires
+          self.run_setup()
+        File
+      "/home/qcrs/learning/llm-kv-lab/.cache/uv/builds-v0/.tmpJBvTtW/lib/python3.10/site-packages/setuptools/build_meta.py",
+      line 317, in run_setup
+          exec(code, locals())
+        File "<string>", line 45, in <module>
+        File "<string>", line 30, in load_module_from_path
+        File "<frozen importlib._bootstrap_external>", line 879, in
+      exec_module
+        File "<frozen importlib._bootstrap_external>", line 1016, in get_code
+        File "<frozen importlib._bootstrap_external>", line 1073, in get_data
+      FileNotFoundError: [Errno 2] No such file or directory:
+      '/home/qcrs/learning/llm-kv-lab/third_party/vllm/tools/build_rust.py'
+
+
+hint: Build failures usually indicate a problem with the package or the build environment

@@ -1,0 +1,24 @@
+{
+  "task": "Q1-00-002",
+  "collected_at": "2026-08-14T10:49:59.025204+08:00",
+  "status": "PASS",
+  "vllm": "0.26.0",
+  "vllm_path": "/home/qcrs/learning/llm-kv-lab/third_party/vllm/vllm/__init__.py",
+  "torch": "2.11.0+cu129",
+  "torch_cuda_runtime": "12.9",
+  "triton": "3.6.0",
+  "driver": "565.57.01",
+  "cuda_home": "/usr/local/cuda-12.1",
+  "cuda_available": true,
+  "cuda_visible_device_count": 1,
+  "device": "NVIDIA A100 80GB PCIe",
+  "compute_capability": "8.0",
+  "nccl_runtime": [
+    2,
+    28,
+    9
+  ],
+  "cuda_tensor_sum": 6,
+  "native_extension": "/home/qcrs/learning/llm-kv-lab/third_party/vllm/vllm/_C_stable_libtorch.abi3.so",
+  "moe_native_extension": "/home/qcrs/learning/llm-kv-lab/third_party/vllm/vllm/_moe_C_stable_libtorch.abi3.so"
+}

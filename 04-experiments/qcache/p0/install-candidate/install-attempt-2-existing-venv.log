@@ -1,0 +1,12 @@
+QCache Q1-00-002 vLLM install
+source=/home/qcrs/learning/llm-kv-lab/third_party/vllm
+environment=/home/qcrs/learning/llm-kv-lab/.venvs/vllm-v026-torch211-cu129-py310
+CUDA_HOME=/usr/local/cuda-12.1
+VLLM_PRECOMPILED_WHEEL_COMMIT=568afb3a13806beb53bb2e6bd518269357b237c0
+VLLM_PRECOMPILED_WHEEL_VARIANT=cu129
+Using CPython 3.10.20 interpreter at: /home/qcrs/.conda/envs/learning/bin/python3
+Creating virtual environment at: .venvs/vllm-v026-torch211-cu129-py310
+error: Failed to create virtual environment
+  Caused by: A virtual environment already exists at: .venvs/vllm-v026-torch211-cu129-py310
+
+hint: Use the `--clear` flag or set `UV_VENV_CLEAR=1` to replace the existing virtual environment

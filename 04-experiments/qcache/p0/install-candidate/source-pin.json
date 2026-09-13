@@ -1,0 +1,10 @@
+{
+  "repository": "vllm-project/vllm",
+  "path": "/home/qcrs/learning/llm-kv-lab/third_party/vllm",
+  "branch": "study-vllm-0.26",
+  "tag": "v0.26.0",
+  "commit": "568afb3a13806beb53bb2e6bd518269357b237c0",
+  "environment": "/home/qcrs/learning/llm-kv-lab/.venvs/vllm-v026-torch211-cu129-py310",
+  "cuda_home": "/usr/local/cuda-12.1",
+  "precompiled_wheel_variant": "cu129"
+}

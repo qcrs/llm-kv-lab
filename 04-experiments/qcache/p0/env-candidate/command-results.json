@@ -1,0 +1,114 @@
+[
+  {
+    "name": "nvidia_smi_gpu_query",
+    "command": "nvidia-smi --query-gpu=index,name,uuid,driver_version,memory.total,compute_cap --format=csv,noheader,nounits",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "0, NVIDIA A100 80GB PCIe, GPU-3ecfad62-035b-2626-e769-79c785e7665d, 565.57.01, 81920, 8.0\n1, NVIDIA A100 80GB PCIe, GPU-a53fa601-8471-d782-2971-46e5a8e5d328, 565.57.01, 81920, 8.0\n2, NVIDIA A100 80GB PCIe, GPU-25019de8-09aa-328a-be23-4bec986badad, 565.57.01, 81920, 8.0",
+    "stderr": ""
+  },
+  {
+    "name": "nvidia_smi",
+    "command": "nvidia-smi",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "Fri Aug 14 09:55:29 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA A100 80GB PCIe          Off |   00000000:3B:00.0 Off |                    0 |\n| N/A   40C    P0             65W /  300W |    2014MiB /  81920MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   1  NVIDIA A100 80GB PCIe          Off |   00000000:B1:00.0 Off |                    0 |\n| N/A   35C    P0             66W /  300W |     861MiB /  81920MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   2  NVIDIA A100 80GB PCIe          Off |   00000000:D9:00.0 Off |                    0 |\n| N/A   65C    P0            240W /  300W |    7681MiB /  81920MiB |     42%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n                                                                                         \n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A      2440      G   /usr/lib/xorg/Xorg                              4MiB |\n|    0   N/A  N/A   1153337      C   python                                       1100MiB |\n|    0   N/A  N/A   1228715      C   ...d_xd/LLaMA-Factory/.venv/bin/python        414MiB |\n|    0   N/A  N/A   3600854      C   ...d_xd/LLaMA-Factory/.venv/bin/python        414MiB |\n|    1   N/A  N/A      2440      G   /usr/lib/xorg/Xorg                              4MiB |\n|    1   N/A  N/A    828225      C   ...lib/libreoffice/program/soffice.bin        412MiB |\n|    1   N/A  N/A   1153337      C   python                                        414MiB |\n|    2   N/A  N/A      2440      G   /usr/lib/xorg/Xorg                              4MiB |\n|    2   N/A  N/A   1153337      C   python                                        414MiB |\n|    2   N/A  N/A   3061194      C   python                                       7232MiB |\n+-----------------------------------------------------------------------------------------+",
+    "stderr": ""
+  },
+  {
+    "name": "selected_nvcc",
+    "command": "/usr/local/cuda-12.1/bin/nvcc --version",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2023 NVIDIA Corporation\nBuilt on Tue_Feb__7_19:32:13_PST_2023\nCuda compilation tools, release 12.1, V12.1.66\nBuild cuda_12.1.r12.1/compiler.32415258_0",
+    "stderr": ""
+  },
+  {
+    "name": "selected_ncu",
+    "command": "/usr/local/cuda-12.1/bin/ncu --version",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2023 NVIDIA Corporation\nVersion 2023.1.0.0 (build 32376155) (public-release)",
+    "stderr": ""
+  },
+  {
+    "name": "selected_nsys",
+    "command": "/usr/local/cuda-12.1/bin/nsys --version",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "NVIDIA Nsight Systems version 2023.1.2.43-32377213v0",
+    "stderr": ""
+  },
+  {
+    "name": "gcc",
+    "command": "gcc --version",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\nCopyright (C) 2019 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "stderr": ""
+  },
+  {
+    "name": "glibc",
+    "command": "ldd --version",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "ldd (Ubuntu GLIBC 2.31-0ubuntu9.16) 2.31\nCopyright (C) 2020 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nWritten by Roland McGrath and Ulrich Drepper.",
+    "stderr": ""
+  },
+  {
+    "name": "workspace_disk",
+    "command": "df -B1 /home/qcrs/learning/llm-kv-lab",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "Filesystem         1B-blocks          Used    Available Use% Mounted on\n/dev/sda2      1888559685632 1405478928384 387071709184  79% /",
+    "stderr": ""
+  },
+  {
+    "name": "vllm_commit",
+    "command": "git rev-parse HEAD",
+    "cwd": "/home/qcrs/learning/llm-kv-lab/third_party/vllm",
+    "returncode": 0,
+    "stdout": "568afb3a13806beb53bb2e6bd518269357b237c0",
+    "stderr": ""
+  },
+  {
+    "name": "vllm_branch",
+    "command": "git branch --show-current",
+    "cwd": "/home/qcrs/learning/llm-kv-lab/third_party/vllm",
+    "returncode": 0,
+    "stdout": "study-vllm-0.26",
+    "stderr": ""
+  },
+  {
+    "name": "vllm_status",
+    "command": "git status --short",
+    "cwd": "/home/qcrs/learning/llm-kv-lab/third_party/vllm",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "vllm_tags",
+    "command": "git tag --points-at HEAD",
+    "cwd": "/home/qcrs/learning/llm-kv-lab/third_party/vllm",
+    "returncode": 0,
+    "stdout": "v0.26.0",
+    "stderr": ""
+  },
+  {
+    "name": "model_size_smoke",
+    "command": "du -sb /data/models/Qwen3-0.6B",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "1519216683\t/data/models/Qwen3-0.6B",
+    "stderr": ""
+  },
+  {
+    "name": "model_size_formal",
+    "command": "du -sb /data/models/Qwen3-4B-Instruct-2507",
+    "cwd": "/home/qcrs/learning/llm-kv-lab",
+    "returncode": 0,
+    "stdout": "8060935356\t/data/models/Qwen3-4B-Instruct-2507",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,92 @@
+# ============================================================
+# Local Python / runtime environments
+# ============================================================
+.venv
+.venv/
+.venvs/
+env/
+venv/
+
+# ============================================================
+# Local caches
+# ============================================================
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# ============================================================
+# Runtime source repositories / Git worktrees
+# These have independent Git ownership.
+# ============================================================
+third_party/
+worktrees/
+
+# ============================================================
+# Local model / binary / profiling artifacts
+# ============================================================
+*.so
+*.a
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+*.nsys-rep
+*.ncu-rep
+*.qdrep
+
+build/
+dist/
+
+# ============================================================
+# Tool / agent local metadata
+# ============================================================
+.agents/
+.codex/
+
+# ============================================================
+# Historical local archives
+# Not part of public workspace repository.
+# ============================================================
+archive/
+99-archive/
+
+# ============================================================
+# Experiment raw evidence
+#
+# Keep scripts / notes / records / summaries in Git.
+# Keep large/raw machine logs local unless deliberately promoted.
+# ============================================================
+04-experiments/**/raw/
+04-experiments/**/profiles/
+04-experiments/**/traces/
+
+# Generic temporary / backup files
+*.bak
+*.backup
+*.tmp
+*.swp
+*~
+
+# Local repository cleanup / audit artifacts
+/.gitignore.before-github-cleanup
+/repo-topology-audit-*.log
+/github-candidate-files.txt
+/github-candidate-large-files.txt
+/p1-document-organization-audit.log
+/p1-record-move-reference-audit.log
+/WORKSPACE-FILE-MANIFEST.txt
+
+# Legacy aliases pointing into ignored archive trees
+/01-projects/quantized-paged-kv
+/04-experiments/project1
+
+# Generated context bundles; source documents are tracked separately
+/00-docs/context-packs/*.zip
+
+# Local environment activation helper
+/activate

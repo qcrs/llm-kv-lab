@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "task": "Q1-00-001",
+  "collected_at": "2026-08-14T09:55:30.659538+08:00",
+  "status": "PASS",
+  "host": {
+    "kernel": "5.15.0-67-generic",
+    "machine": "x86_64",
+    "glibc": "2.31",
+    "glibc_command_first_line": "ldd (Ubuntu GLIBC 2.31-0ubuntu9.16) 2.31",
+    "gcc_first_line": "gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0",
+    "workspace_disk_df_b1": "/dev/sda2      1888559685632 1405478928384 387071709184  79% /"
+  },
+  "gpu": {
+    "physical_devices": [
+      {
+        "index": "0",
+        "name": "NVIDIA A100 80GB PCIe",
+        "uuid": "GPU-3ecfad62-035b-2626-e769-79c785e7665d",
+        "driver_version": "565.57.01",
+        "memory_mib": "81920",
+        "compute_capability": "8.0"
+      },
+      {
+        "index": "1",
+        "name": "NVIDIA A100 80GB PCIe",
+        "uuid": "GPU-a53fa601-8471-d782-2971-46e5a8e5d328",
+        "driver_version": "565.57.01",
+        "memory_mib": "81920",
+        "compute_capability": "8.0"
+      },
+      {
+        "index": "2",
+        "name": "NVIDIA A100 80GB PCIe",
+        "uuid": "GPU-25019de8-09aa-328a-be23-4bec986badad",
+        "driver_version": "565.57.01",
+        "memory_mib": "81920",
+        "compute_capability": "8.0"
+      }
+    ],
+    "driver_reported_cuda_max": "12.7"
+  },
+  "cuda": {
+    "floating_cuda_path": "/usr/local/cuda",
+    "floating_cuda_target": "/data/spack/opt/spack/linux-cascadelake/cuda-12.6.3-yxlvehoh5th7kv45jgdktvk2kodxj455",
+    "selected_cuda_home": "/usr/local/cuda-12.1",
+    "selected_toolkit_version": "12.1.20230222",
+    "selected_nvcc": {
+      "release": "12.1",
+      "build": "12.1.66"
+    },
+    "path_nvcc": "/usr/local/cuda-12.1/bin/nvcc",
+    "ncu": "Version 2023.1.0.0 (build 32376155) (public-release)",
+    "nsys": "NVIDIA Nsight Systems version 2023.1.2.43-32377213v0"
+  },
+  "python_stack_before_install": {
+    "executable": "/home/qcrs/.conda/envs/learning/bin/python3",
+    "version": "3.10.20",
+    "implementation": "CPython",
+    "virtual_env": "MISSING",
+    "torch": "2.5.1+cu121",
+    "torch_cuda_runtime": "12.1",
+    "cuda_available": true,
+    "cuda_visible_device_count": 1,
+    "nccl_available": true,
+    "nccl_runtime": [
+      2,
+      21,
+      5
+    ],
+    "visible_device_0": {
+      "name": "NVIDIA A100 80GB PCIe",
+      "compute_capability": "8.0",
+      "total_memory_bytes": 85097971712
+    },
+    "triton": "3.1.0",
+    "nvidia_nccl_package": "2.21.5"
+  },
+  "models": {
+    "smoke": {
+      "path": "/data/models/Qwen3-0.6B",
+      "exists": true,
+      "size_bytes": 1519216683,
+      "config_path": "/data/models/Qwen3-0.6B/config.json",
+      "config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd"
+    },
+    "formal": {
+      "path": "/data/models/Qwen3-4B-Instruct-2507",
+      "exists": true,
+      "size_bytes": 8060935356,
+      "config_path": "/data/models/Qwen3-4B-Instruct-2507/config.json",
+      "config_sha256": "5beea1a4a34c62782bfb2f911c606741a3bab8f92d80a118fa053c28af12e8ba"
+    }
+  },
+  "vllm_candidate": {
+    "path": "/home/qcrs/learning/llm-kv-lab/third_party/vllm",
+    "commit": "568afb3a13806beb53bb2e6bd518269357b237c0",
+    "branch": "study-vllm-0.26",
+    "tags_at_head": [
+      "v0.26.0"
+    ],
+    "worktree_clean": true
+  },
+  "environment_selection": {
+    "python": "/home/qcrs/.conda/envs/learning/bin/python3",
+    "shared_venv": "/home/qcrs/learning/llm-kv-lab/.venvs/vllm-v026-torch211-cu129-py310",
+    "short_venv_link": "/home/qcrs/learning/llm-kv-lab/.venv",
+    "uv_cache": "/home/qcrs/learning/llm-kv-lab/.cache/uv",
+    "wheel_variant_candidate": "cu129",
+    "note": "cu129 is the vLLM v0.26 CUDA 12 wheel variant; runtime compatibility must pass Q1-00-002 on the installed 565.57.01 driver."
+  }
+}
