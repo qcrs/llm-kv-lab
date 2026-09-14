@@ -1,0 +1,232 @@
+{
+  "version": "v5-2026-09-14",
+  "project": "Tangram -> vLLM 0.26 Ragged KV Runtime",
+  "canonical_precedence": [
+    "00-README-Project-Entry.md",
+    "37-v5-Architecture-Audit-Remaining-Issues-and-Decisions.md",
+    "38-Scheduler-Side-Ragged-Physical-State-and-Allocation-Contract.md",
+    "39-Ragged-Step-Metadata-Shape-Lifetime-and-Attention-Contract.md",
+    "40-Resume-Project-Success-Criteria-Deliverables-and-Stop-Rules.md",
+    "41-v5-Implementation-Slices-File-Ownership-and-Dependency-DAG.md",
+    "22-R1-Exact-Engineering-Contract.md",
+    "23-R2-R4-Physical-State-Reclaim-and-Policy-Contract.md",
+    "28-Canonical-Execution-Order-and-Go-NoGo-Gates.md"
+  ],
+  "source_pins": {
+    "qcrs_vllm": "bd5a0e950e4138ab3cb6fa2e12eecdcce6607a00",
+    "qcrs_baseline": "568afb3a13806beb53bb2e6bd518269357b237c0",
+    "tangram": "6fa551fc8f6edcc118a2a39b3554ee1520e91edd"
+  },
+  "files": [
+    {
+      "name": "00-README-Project-Entry.md",
+      "bytes": 10078,
+      "sha256": "7285f2f598f150d2df16267b28fcaf484a7e78215d2162787572083a5f0bed19"
+    },
+    {
+      "name": "01-End-to-End-Architecture-and-Invariants.md",
+      "bytes": 8809,
+      "sha256": "fb9a50a9e46527e1062310c93711552ee6964692ecdc1a7c2ab788c71d73e125"
+    },
+    {
+      "name": "02-Tangram-to-vLLM026-Source-Surface-Map.md",
+      "bytes": 7004,
+      "sha256": "cb6b01a7a68f3253a035a3add0b72d137e5a67e40df94c68b2f002a7ad3c7644"
+    },
+    {
+      "name": "03-Round-by-Round-Implementation-Plan.md",
+      "bytes": 9352,
+      "sha256": "2507c7ce3d34d9cb0dd0e076080cee0789e24f6f69aead286f5e3d79d19c5bc8"
+    },
+    {
+      "name": "04-R1-Ragged-Identity-Paging-Deep-Dive.md",
+      "bytes": 8118,
+      "sha256": "3221812be1bf4418551ebfed3fa158bb885ea66ad8be7121869c2ce187dfc62e"
+    },
+    {
+      "name": "05-Core-R2-R4-NonUniform-Reclamation-and-Compression.md",
+      "bytes": 5947,
+      "sha256": "0275dcb47af1de5e86f031b99426f31719fea209f9f597bac646c569b792f711"
+    },
+    {
+      "name": "06-Breadth-TP2-and-Preemption.md",
+      "bytes": 4597,
+      "sha256": "febc97efe4b39ba7f74d87fa89bec2ab9cd1b079e1b5e1fc7c4235a5a2b7995f"
+    },
+    {
+      "name": "07-Optimization-AOT-Triton-CUDAGraph.md",
+      "bytes": 4928,
+      "sha256": "8691dd94ef1554ffccc95dd0d9171cf2d122e4b855b3f45e0c471b422eaec552"
+    },
+    {
+      "name": "08-Learning-and-Source-Reading-Guide.md",
+      "bytes": 6115,
+      "sha256": "d252ac8c5de8ec4a9a298aeacbbc448fa06323461052ad6dc6c2e2e815422485"
+    },
+    {
+      "name": "09-Test-Evidence-Benchmark-and-Resume-Closure.md",
+      "bytes": 5940,
+      "sha256": "f7b902959cf1dfcbff602e69799aa7923a32daee4f9e05cd7b8e7b45af78d8a3"
+    },
+    {
+      "name": "10-Codex-Slice-Execution-Contracts.md",
+      "bytes": 5252,
+      "sha256": "3e030caea0be4b718d94f6bf7d8b2d5a449f76779a1402088dec355f7b709c79"
+    },
+    {
+      "name": "11-Source-Pins-and-Key-Files.md",
+      "bytes": 4644,
+      "sha256": "d48bf6c3c77c7d4312d9f6c99c37e1822b323138f83d8685ffd5b146e7394c3f"
+    },
+    {
+      "name": "12-Architecture-Review-v2-Key-Findings.md",
+      "bytes": 5119,
+      "sha256": "f1047c9ea7483a15c5406fa2276f5879ef093f353af4eda63bca627cc57f47b8"
+    },
+    {
+      "name": "13-Ragged-Physical-Layout-and-MRv2-KV-Write-Seam.md",
+      "bytes": 5260,
+      "sha256": "5bec7afa8ae22053f0c8b43c238a02f9809bad4feb6452ff65fe7164378c721d"
+    },
+    {
+      "name": "14-Runtime-State-Machine-Ownership-and-Transaction-Protocol.md",
+      "bytes": 4756,
+      "sha256": "fac710b778a3e5d3b6d2b788fd7e5768ae60a67fc2ff5d139267182f38c95a25"
+    },
+    {
+      "name": "15-Tangram-Reference-Test-Port-Matrix.md",
+      "bytes": 3481,
+      "sha256": "a7d4f547a874b32e448b83e229262c4d5629bbfe07b756827a8412aaa0a21bbc"
+    },
+    {
+      "name": "16-Risk-Register-Fallback-and-Decision-Gates.md",
+      "bytes": 3465,
+      "sha256": "68ac9780b8157e58feb556640e7b791e731e0df3802cd14cb8f509561f3e2133"
+    },
+    {
+      "name": "17-Performance-Accounting-and-Benchmark-Matrix.md",
+      "bytes": 2953,
+      "sha256": "d39c3900e67ee426ec0a259e35933b2873d304f8da185d18851a9c4e81452c91"
+    },
+    {
+      "name": "18-Architecture-Decision-Records.md",
+      "bytes": 2830,
+      "sha256": "3d620e790263ec42ddbddc3505a5db70a2326e16a01ca525887b32e8f19a5086"
+    },
+    {
+      "name": "19-Implementation-File-Plan-and-Dependency-DAG.md",
+      "bytes": 5210,
+      "sha256": "2cf46213517d32f65c293a431a2744932488f2e3399a76e121ff0b27056ffa04"
+    },
+    {
+      "name": "20-Definitive-Project-Scope-and-Feasibility.md",
+      "bytes": 8358,
+      "sha256": "8a81984947189a8f3ecdf6ad718817ba5317e777a8d5d095b95793a788b87c4c"
+    },
+    {
+      "name": "21-Tangram-Source-Provenance-Ledger.md",
+      "bytes": 8057,
+      "sha256": "24c9239e2ede1c40bdeac9e597e7b2c53caa0ab679314a87dccaa7f8ffc2c455"
+    },
+    {
+      "name": "22-R1-Exact-Engineering-Contract.md",
+      "bytes": 7830,
+      "sha256": "c7bf2620bd16edac4df5e4f6a34b12aa19b32a817b10ea03dd42fb89fd7f0c6d"
+    },
+    {
+      "name": "23-R2-R4-Physical-State-Reclaim-and-Policy-Contract.md",
+      "bytes": 6181,
+      "sha256": "432247d82bc1eba2a68af17eb88753a7eb4084c97033c68c769cf888ec9229fc"
+    },
+    {
+      "name": "24-Data-Structures-APIs-and-Ownership.md",
+      "bytes": 5911,
+      "sha256": "6b9ace92e35c3152aa0f3ff774e7d1923073e2348cfc8a87705d52a3233e9bbd"
+    },
+    {
+      "name": "25-Feasibility-Risk-Fallback-Ladder.md",
+      "bytes": 3878,
+      "sha256": "1be5c8a321ba3ccf4eeba07346b027a048e1bbe8bafcece895ccb551438ad402"
+    },
+    {
+      "name": "26-Highlights-Evidence-and-Resume-Closure.md",
+      "bytes": 6261,
+      "sha256": "312766d0e7e7ad7d61fc4b332ea0521802cdcf7a78eca648c6d7516fa719b295"
+    },
+    {
+      "name": "27-Codex-Execution-Contracts-v3.md",
+      "bytes": 4020,
+      "sha256": "952113e30e6b410e26a93ba1b0c0dac82f79c5aab384d6c80e5f424ff448d886"
+    },
+    {
+      "name": "28-Canonical-Execution-Order-and-Go-NoGo-Gates.md",
+      "bytes": 4231,
+      "sha256": "6a55f26691da0bba7705339114de4b3a0d6ff4b51705b7daf047d456d043a0ae"
+    },
+    {
+      "name": "29-vLLM026-Ragged-KV-Resume-Grade-Systems-Deep-Dive-v4.md",
+      "bytes": 55358,
+      "sha256": "40495daa7b5bf35bb72ec15f3487d10eef7d87a5997a26bb35a78c6d8b75e15e"
+    },
+    {
+      "name": "30-vLLM026-End-to-End-Source-Chain-and-Modification-Map.md",
+      "bytes": 8027,
+      "sha256": "c656583149308ddb46300873154b604b04a3486e0b5a538b309bb9dde820c81a"
+    },
+    {
+      "name": "31-TP2-Distributed-Ragged-KV-Exact-Engineering-Contract.md",
+      "bytes": 4257,
+      "sha256": "b60a2d3e0603533e3f8dd79a0e6faebc143f3d98389476c581a7806523433779"
+    },
+    {
+      "name": "32-Piecewise-CUDA-Graph-Exact-Engineering-Contract.md",
+      "bytes": 3802,
+      "sha256": "117529a82db50025722ccedc803e02bba2303c94bbe436095c2c22a7e76e7d58"
+    },
+    {
+      "name": "33-Preemption-Lifecycle-and-State-Reset-Exact-Contract.md",
+      "bytes": 3823,
+      "sha256": "a2f4798591b064df43dca78c4910cd47ab47be6c344e8224761f41197c4c69f1"
+    },
+    {
+      "name": "34-Physical-Layout-Stride-and-Virtual-Block-Exact-Contract.md",
+      "bytes": 3376,
+      "sha256": "283e344eef855623c03229294508a3226de6e9ec9304f3bd59c8c0c1082736e9"
+    },
+    {
+      "name": "35-Resume-Technical-Stack-and-Evidence-Matrix.md",
+      "bytes": 4409,
+      "sha256": "885366a35ab6549ce16eebe7b9d30bd56184c4801706719bdb0c66298e101361"
+    },
+    {
+      "name": "36-Execution-State-Evidence-and-Handoff-Template.md",
+      "bytes": 3275,
+      "sha256": "4fe2f39ac26a364e388a061112a51cbed46ceae1b21ec29b6eb1260103477475"
+    },
+    {
+      "name": "37-v5-Architecture-Audit-Remaining-Issues-and-Decisions.md",
+      "bytes": 6827,
+      "sha256": "98972df3002879c437e437d0c0d474620594d5ff4ba08e03a55324aff20c640d"
+    },
+    {
+      "name": "38-Scheduler-Side-Ragged-Physical-State-and-Allocation-Contract.md",
+      "bytes": 5893,
+      "sha256": "4b8a50874acb0eab8f24b0f4f75657d9b52448440264009bb01e540e3a011611"
+    },
+    {
+      "name": "39-Ragged-Step-Metadata-Shape-Lifetime-and-Attention-Contract.md",
+      "bytes": 5222,
+      "sha256": "38b3ac9cc1acc895b6b4ad29ccb3d0e1ac79769491ce3cba11ade4e73a8c3029"
+    },
+    {
+      "name": "40-Resume-Project-Success-Criteria-Deliverables-and-Stop-Rules.md",
+      "bytes": 3808,
+      "sha256": "19581ae33dd0f0bf9bf49877b2dafd0df3887aa0c6898cff27d7f844bbe9b1a4"
+    },
+    {
+      "name": "41-v5-Implementation-Slices-File-Ownership-and-Dependency-DAG.md",
+      "bytes": 4689,
+      "sha256": "814524561111de374761d0133028150efd750c65f08a225ace55ecb305074a25"
+    }
+  ]
+}
