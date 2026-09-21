@@ -1,45 +1,41 @@
-# P1 V1 Core Freeze Handoff
+# P1 Runtime Handoff
 
-## 交接状态
+## 当前 Slice
 
-```text
-P1 V1/Core = PASS / ACCEPTED / FROZEN
-S1 = CLOSED; S2 = CLOSED; S3 = CLOSED; T2 = CLOSED; T3 = CLOSED
-```
+`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 当前状态为 `PASS_PENDING_WEB_REVIEW`。实现位于
+`/home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim`，branch 为
+`p1/v2-token-compaction-v026`，`REVIEWED_HEAD` 与 `ACTUAL_START_HEAD` 均为
+`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`。
 
-## Accepted architecture
+本 Slice 已关闭 C0–C4 execution-addressing foundation：
 
-当前 accepted core 是 whole-block physical KV reclamation：logical/physical state、
-model/physical positions、attention visibility、Worker dense `BlockTables`、Scheduler
-canonical ownership、safe-free、real reuse 与 physical-E allocation 已闭合。
+- `RaggedAttentionSpec` Core geometry hardening；
+- `ResolvedKVAddress` / `resolve_kv_address` CPU reference oracle；
+- `[P,Hp,B,2D] → [P*Hp,1,B,2D]` zero-copy view；
+- Ragged Hp-wide shared backing materialization；
+- member virtual block table、virtual slots、sequence lengths transforms。
 
-## Source identity
+## Evidence
 
-Accepted V1 commit：`cd444b72ceecb2496bf015baf8c18bf883151fa1`
-；tag：`p1-v1-core-accepted`；branch：`p1/physical-kv-reclaim-v026`；checkpoint
-worktree：`CLEAN`。Upstream parent 为 `568afb3a13806beb53bb2e6bd518269357b237c0`。
-历史 dirty diff 仅作为 provenance 保留。
+`32 passed` focused C0–C4/Dense suite、`37 passed` Ragged planner/manager/worker regression、
+`5 passed` Dense `attn_utils` regression；focused `ruff`、`py_compile`、`git diff --check`
+均 PASS。Code Trace 与 raw evidence：
 
-## Evidence basis
+- `04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md`
+- `04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/`
 
-Gate review、T3 `4 + 39 = 43` historical suite、Gate rerun `4 + 30` selected subset、
-以及 GPU2 `/data/models/Qwen3-0.6B` real Engine closure 均已索引。不同 selected suite
-数字属于不同 review 时点，不互相覆盖。
+P1 V1/Core accepted checkpoint 仍为 `cd444b72ceecb2496bf015baf8c18bf883151fa1` /
+`p1-v1-core-accepted`；本 Slice 没有创建 commit，也没有修改 V1 accepted behavior。
 
-## Baseline and limits
+## 未覆盖
 
-A100 80GB、MRV2、BF16、FA2、eager、TP/PP/DP/DCP/PCP=1、single KV group、
-`block_size=16`；prefix/spec/async/CUDA Graph/connector/offload 关闭。未验证配置保持
-`NOT VALIDATED`，retention policy、token-level compaction、Triton/CUDA compaction、
-性能/HBM 结论与 V2 保持 `OUT OF SCOPE`。
+未实现 Ragged KV write、FlashAttention read、production Ragged activation、真实 GPU Engine
+identity、Scheduler/ModelRunner wiring、prefill/mixed、quantized/unequal K/V、TP2、
+Triton/CUDA Graph 或 benchmark。
 
-## Freeze rule and next phase
+## Next Allowed Action
 
-```text
-P1 V1/Core is frozen.
-DO NOT MODIFY V1 CORE WITHOUT REOPEN.
-```
+`WEB_REVIEW_CURRENT_SLICE`
 
-任何 V1 修改先创建 `P1-V1-CORE-REOPEN-XX`。下一窗口角色为 ChatGPT Web =
-Architect / Mentor / Reviewer；唯一允许动作是 `P1-V2-DESIGN-REVIEW-01`，不是 V2
-implementation。
+Web review 当前 C0–C4 diff/evidence 后，才由用户 + ChatGPT Web/Work 决定是否进入
+`P1-V2-R1-D1-RAGGED-KV-WRITE-01`。

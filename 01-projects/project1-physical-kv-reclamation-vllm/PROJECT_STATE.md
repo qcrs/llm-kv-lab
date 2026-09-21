@@ -10,11 +10,11 @@ project_root: /home/qcrs/learning/llm-kv-lab/01-projects/project1-physical-kv-re
 implementation_repository: vllm-project/vllm
 implementation_worktree: /home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim
 reference_or_study_tree: /home/qcrs/learning/llm-kv-lab/third_party/vllm
-branch: p1/physical-kv-reclaim-v026
-head: cd444b72ceecb2496bf015baf8c18bf883151fa1
+branch: p1/v2-token-compaction-v026
+head: 018e68f47f3bcdfb0b935f5ffe0e579b033c6268
 last_good_commit: cd444b72ceecb2496bf015baf8c18bf883151fa1
 accepted_tag: p1-v1-core-accepted
-working_tree_status: CLEAN_CHECKPOINT
+working_tree_status: DIRTY_SLICE_IN_PROGRESS
 editable_import_path: /home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim/vllm
 implementation_runner_generation: MRV2
 implementation_runner_env: VLLM_USE_V2_MODEL_RUNNER=1
@@ -60,17 +60,17 @@ post_reclaim_q_len: 1
 ## Current Position
 
 ~~~yaml
-project_version: V1
-current_milestone: P1 V1/Core Freeze Complete
-current_parent_task: P1 V1/Core Freeze
-execution_mode: FREEZE_ONLY_COMPLETE
-current_slice: P1-V1-CORE-FREEZE-01
-parent_task_status: ACCEPTED / FROZEN
-slice_status: PASS
-approved_implementation_slice: S1, S2, S3, T2, T3
+project_version: V2 / R1
+current_milestone: P1 V2 / R1 execution-addressing foundation
+current_parent_task: P1-V2-R1-C-EXECUTION-FOUNDATION-01
+execution_mode: SLICE_EXECUTE
+current_slice: P1-V2-R1-C-EXECUTION-FOUNDATION-01
+parent_task_status: IN_PROGRESS / REVIEW_REQUIRED
+slice_status: PASS_PENDING_WEB_REVIEW
+approved_implementation_slice: P1-V2-R1-C-EXECUTION-FOUNDATION-01
 last_completed_gate: P1-V1-CORE-GATE-REVIEW-01 PASS / ACCEPTED
 next_parent_task: P1-V2-DESIGN-REVIEW-01
-proposed_next_parent_task: P1-V2-DESIGN-REVIEW-01 (DESIGN REVIEW ONLY)
+proposed_next_parent_task: P1-V2-R1-D1-RAGGED-KV-WRITE-01 (only after Web review)
 ~~~
 
 ## Approved Designs
@@ -175,6 +175,17 @@ V1 Core Gate、T3 targeted/regression、真实 Engine closure 与 freeze evidenc
 - `04-experiments/project1_kv_reclaim/notes/P1-M1-T2-IMPL-01A-R1-Final-Row-Reclaim-Composition-实施记录.md`
 - `04-experiments/project1_kv_reclaim/notes/P1-CODE-DIFF-TRACKER.md`
 
+## Current Slice — P1-V2-R1-C-EXECUTION-FOUNDATION-01
+
+- `REVIEWED_HEAD` / `ACTUAL_START_HEAD`：`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`；本轮无 HEAD delta，未触发 `DESIGN_CONFLICT`。
+- 当前结果：`PASS_PENDING_WEB_REVIEW`；本 Slice 只关闭 C0–C4 execution-addressing foundation，不启用 production Ragged dispatch。
+- 本 Slice 修改的 source：`vllm/v1/kv_cache_interface.py`、`vllm/v1/ragged_kv_layout.py`、`vllm/v1/attention/backends/ragged_layout.py`（新增）、`vllm/v1/worker/gpu/attn_utils.py`。
+- 本 Slice 修改的 tests：`tests/v1/test_ragged_attention_spec.py`、`tests/v1/test_ragged_kv_layout.py`、`tests/v1/worker/test_attn_utils.py`。
+- 开始前已存在且只做 `NO_CHANGE_REVIEWED` 的 dirty 内容：`vllm/v1/core/ragged_kv_cache_manager.py`、`vllm/v1/core/sched/output.py`，以及 `vllm/v1/ragged_kv_layout.py` 中既存解释性注释；未回滚或覆盖。
+- 代码追踪：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md`。
+- raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/`。
+- 未证明：actual Ragged KV write、FlashAttention read、real Engine production Ragged identity、GPU engine smoke、Scheduler/ModelRunner wiring。
+
 ## Experiments
 
 P1-M1-T1-S1 targeted GPU tests：T1 初始化、T2 normal delta、T3 logical/effective divergence、T4 request slot reuse；4 passed。完整命令与 warning 见 `04-experiments/project1_kv_reclaim/raw/m1-t1-s1/`。
@@ -197,6 +208,8 @@ P1-M1-T3-IMPL-01A：PASS_PENDING_WEB_REVIEW。Scheduler completed physical front
 
 P1-M1-T3-INTEGRATION-CLOSURE：PASS_PENDING_WEB_REVIEW。GPU 2、真实 `/data/models/Qwen3-0.6B`、MRV2/eager/FA2 运行通过：Worker row `[1,2,3,4,5,6]→[1,2,5,6]`，forward-entry E=62、post-forward/commit E=63；Scheduler canonical row完成相同 dense reconcile，free blocks `10860→10862`，released IDs 3/4 refcount归零，request B真实复用 block 4；request A继续生成并以8 output tokens完成，request B以2 output tokens完成。Production未修改，仅新增 smoke script、closure report并修正文档 commit ordering。
 
+P1-V2-R1-C-EXECUTION-FOUNDATION-01：`32 passed` focused C0–C4/Dense suite、`37 passed` Ragged planner/manager/worker regression、`5 passed` Dense `attn_utils` regression；focused `ruff`、`py_compile` 和 `git diff --check` 均 PASS。完整 changed-file `ruff` 仅报告三个 HEAD 既有问题：`kv_cache_interface.py:289 E501`、`attn_utils.py:94 E501`、`attn_utils.py:671 UP038`，本轮未修改。Address/layout raw evidence、命令与限制见 trace 和 `raw/p1-v2-r1-c-execution-foundation-01-final/`。
+
 ## Decisions
 
 - high-level ADR-001/003 only。
@@ -207,7 +220,7 @@ P1-M1-T3-INTEGRATION-CLOSURE：PASS_PENDING_WEB_REVIEW。GPU 2、真实 `/data/m
 ## Blockers
 
 - Accepted V1/Core 已冻结；不得在 V2 开发中顺手修改 V1。
-- 当前 source identity 已由 immutable checkpoint 固化：commit `cd444b72ceecb2496bf015baf8c18bf883151fa1`、tag `p1-v1-core-accepted`、worktree CLEAN。历史 freeze 阶段的 upstream + dirty diff 仅作 provenance 保留。
+- V1 accepted source identity 已由 immutable checkpoint 固化：commit `cd444b72ceecb2496bf015baf8c18bf883151fa1`、tag `p1-v1-core-accepted`；该 checkpoint 当时 worktree CLEAN。当前 implementation worktree 因本 Slice 为 `DIRTY_SLICE_IN_PROGRESS`，历史 freeze 阶段的 upstream + dirty diff 仅作 provenance 保留。
 - prefix/spec/async/CUDA Graph/PP/DCP/PCP>1/multi-group/connector 仍 NOT VALIDATED。
 - retention policy、token-level compaction、Triton/CUDA compaction、benchmark、HBM/OS return、V2 implementation 均 OUT OF SCOPE。
 
@@ -223,6 +236,7 @@ P1-M1-T3-INTEGRATION-CLOSURE：PASS_PENDING_WEB_REVIEW。GPU 2、真实 `/data/m
 - T3-INTEGRATION-CLOSURE：真实 Engine smoke `P1_M1_T3_INTEGRATION_CLOSURE_PASS`、exit code 0。Evidence：`raw/m1-t3-integration-closure/m1-t3-integration-closure.log`。
 - V1-CORE-GATE-REVIEW-01：I1–I18 baseline scope PASS；report 与 raw evidence 已冻结。
 - V1-CORE-FREEZE-01：accepted source manifest、source identity、architecture note、freeze report、handoff 与 artifact index 已生成。
+- P1-V2-R1-C-EXECUTION-FOUNDATION-01：`32 passed` focused、`37 passed` Ragged state regression、`5 passed` Dense regression；`py_compile`、focused `ruff`、`git diff --check` PASS。Evidence：`raw/p1-v2-r1-c-execution-foundation-01-final/` 与对应 Code Trace。
 
 ## Git Checkpoint
 
@@ -236,16 +250,20 @@ rollback_point: p1-v1-core-accepted
 
 ## Exact Next Action
 
-Begin `P1-V2-DESIGN-REVIEW-01` only after Web/Work opens the design-review task；当前不授予 V2 implementation 权限。
+当前 Slice 停在 Web review；不得自动开始 `P1-V2-R1-D1-RAGGED-KV-WRITE-01`，不得启用 production Ragged runtime。
 
 ## Next Allowed Action
 
-P1-V2-DESIGN-REVIEW-01
+WEB_REVIEW_CURRENT_SLICE
 
 ## Proposed Next Action
 
-V1 Core remains frozen. Any V1 change requires `P1-V1-CORE-REOPEN-XX` first。
+Web review 当前 C0–C4 diff/evidence；review 通过后再由用户 + ChatGPT Web/Work 决定
+`P1-V2-R1-D1-RAGGED-KV-WRITE-01`。V1 Core remains frozen；任何 V1 change 仍需
+`P1-V1-CORE-REOPEN-XX`。
 
 ## State Write Authority
 
-Codex 仅可更新事实字段。当前 freeze 已完成；V1/Core 的 accepted/frozen 状态来自 Web/Architecture adjudication。后续任何 V1 修改必须先创建 `P1-V1-CORE-REOPEN-XX`；P2/V2 unlock 仍由用户 + ChatGPT Web/Work 决定。
+Codex 仅可更新事实字段。V1/Core 的 accepted/frozen 状态来自 Web/Architecture adjudication；
+本 Slice 只记录实际实现、测试和 evidence，不批准下一 Slice、不修改 Approved Design、不解锁
+P2/V2 runtime。后续任何 V1 修改必须先创建 `P1-V1-CORE-REOPEN-XX`。

@@ -6,12 +6,24 @@
 
 ```text
 P1 V1/Core = PASS / ACCEPTED / FROZEN
-Freeze Slice = P1-V1-CORE-FREEZE-01
-Canonical source = `cd444b72ceecb2496bf015baf8c18bf883151fa1`
-Canonical tag = `p1-v1-core-accepted`
-Upstream parent = `568afb3a13806beb53bb2e6bd518269357b237c0`
-Next Allowed Action = P1-V2-DESIGN-REVIEW-01
+Current Slice = P1-V2-R1-C-EXECUTION-FOUNDATION-01
+Slice Status = PASS_PENDING_WEB_REVIEW
+Canonical V1 restore point = `cd444b72ceecb2496bf015baf8c18bf883151fa1`
+Current branch = `p1/v2-token-compaction-v026`
+Current HEAD = `018e68f47f3bcdfb0b935f5ffe0e579b033c6268`
+Next Allowed Action = WEB_REVIEW_CURRENT_SLICE
 ```
+
+## 当前 V2 Slice
+
+本轮只关闭 C0–C4 execution-addressing foundation，不启用 production Ragged runtime。已
+完成 geometry hardening、CPU scalar physical address oracle、Hp-wide zero-copy layout、
+shared backing materialization 和 member metadata transforms。focused C0–C4/Dense 为
+`32 passed`，Ragged state regression 为 `37 passed`，Dense `attn_utils` regression 为
+`5 passed`。
+
+实现 trace：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md`。
+raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/`。
 
 ## 已冻结的 V1
 
@@ -54,7 +66,8 @@ EngineCore.step
 验证基线为 A100 80GB、MRV2、BF16、FA2、eager、TP/PP/DP/DCP/PCP=1、single KV
 group、`block_size=16`，并关闭 prefix caching、speculative decoding、async、CUDA
 Graph、KV connector/offload。其余配置为 `NOT VALIDATED`；retention policy、token-level
-compaction、Triton/CUDA compaction、性能结论、HBM/OS return 与 V2 为 `OUT OF SCOPE`。
+compaction、Triton/CUDA compaction、性能结论、HBM/OS return 与未授权的下一 Slice 为
+`OUT OF SCOPE`。
 
 ## 冻结规则
 
@@ -63,5 +76,5 @@ DO NOT MODIFY V1 CORE WITHOUT REOPEN
 ```
 
 任何 S1/S2/S3/T2/T3 修改必须先创建 `P1-V1-CORE-REOPEN-XX`，说明 reason、affected
-invariant、affected evidence 和 regression plan。V2 当前只允许 design review，不是
-implementation authorization。
+invariant、affected evidence 和 regression plan。当前 V2 Slice 已执行完毕，下一动作固定
+为 `WEB_REVIEW_CURRENT_SLICE`；不得自动进入 D1。

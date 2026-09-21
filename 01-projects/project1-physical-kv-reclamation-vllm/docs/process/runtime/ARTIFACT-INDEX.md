@@ -21,6 +21,9 @@ Canonical V1 code checkpoint：`cd444b72ceecb2496bf015baf8c18bf883151fa1`；tag�
 | `04-experiments/project1_kv_reclaim/raw/p1-v1-core-freeze-01/` | raw evidence | CURRENT | repository identity and freeze checks |
 | `04-experiments/project1_kv_reclaim/raw/m1-t2-impl-01b-web-review-fix/` | historical/supporting | PRESERVED | T2 transport closure |
 | `04-experiments/project1_kv_reclaim/raw/p1-v1-core-checkpoint-doc-sync-01/` | raw evidence | CURRENT | checkpoint identity and document sync |
+| `04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md` | supporting report | PASS_PENDING_WEB_REVIEW | C0–C4 execution-addressing change trace |
+| `04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/` | raw evidence | CURRENT | C0–C4 focused tests, source identity, layout/address evidence |
+| `04-experiments/project1_kv_reclaim/handoffs/LATEST/` | handoff | CURRENT | current Slice state, diff, files and test summary |
 
 ## 分类规则
 
