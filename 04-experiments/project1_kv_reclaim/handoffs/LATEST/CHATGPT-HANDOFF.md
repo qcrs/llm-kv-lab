@@ -28,9 +28,13 @@ P1 V1/Core accepted checkpoint 仍是 `cd444b72ceecb2496bf015baf8c18bf883151fa1`
 - Ragged planner/manager/worker state regression：`37 passed`
 - Dense `attn_utils` regression：`5 passed`
 - focused `ruff`、`py_compile`、`git diff --check`：PASS
+- tiny CUDA backing/alias smoke：`CUDA_SMOKE: PASS`（用户授权提升权限）
+- `PLACEMENT_LIFETIME_CONTRACT: FROZEN`：placement tensors 只在 initialization/construction 派生一次，后续 D1/D2 hot path cache/reuse。
 
 Address oracle 和 layout alias raw 结果已记录：
 `layer1/head2/physical_position21 → member6 → cluster3,column0 → page41,offset5 → virtual block82 → virtual slot1317`；physical `[P,Hp,B,2D]` 与 virtual `[P*Hp,1,B,2D]` 使用同一 storage，无 hidden copy。
+
+CUDA raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/24-cuda-alias-smoke-escalated.log`。
 
 ## 未证明与边界
 

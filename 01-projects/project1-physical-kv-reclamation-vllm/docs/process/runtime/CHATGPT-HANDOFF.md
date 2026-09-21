@@ -5,7 +5,7 @@
 `P1-V2-R1-C-EXECUTION-FOUNDATION-01` 当前状态为 `PASS_PENDING_WEB_REVIEW`。实现位于
 `/home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim`，branch 为
 `p1/v2-token-compaction-v026`，`REVIEWED_HEAD` 与 `ACTUAL_START_HEAD` 均为
-`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`。
+`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`；该提交是前一阶段将 C0–C4 实现与 trace 固化的正常提交。
 
 本 Slice 已关闭 C0–C4 execution-addressing foundation：
 

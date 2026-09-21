@@ -11,7 +11,7 @@ implementation_repository: vllm-project/vllm
 implementation_worktree: /home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim
 reference_or_study_tree: /home/qcrs/learning/llm-kv-lab/third_party/vllm
 branch: p1/v2-token-compaction-v026
-head: 018e68f47f3bcdfb0b935f5ffe0e579b033c6268
+head: db3cc1179f53e2dc8df2096ed17b5ec86ef033d3
 last_good_commit: cd444b72ceecb2496bf015baf8c18bf883151fa1
 accepted_tag: p1-v1-core-accepted
 working_tree_status: DIRTY_SLICE_IN_PROGRESS
@@ -185,6 +185,7 @@ V1 Core Gate、T3 targeted/regression、真实 Engine closure 与 freeze evidenc
 - 代码追踪：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md`。
 - raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/`。
 - 未证明：actual Ragged KV write、FlashAttention read、real Engine production Ragged identity、GPU engine smoke、Scheduler/ModelRunner wiring。
+- closure action：提升权限后的 tiny CUDA alias smoke `PASS`；placement tensor lifetime contract `FROZEN`。证据：`raw/.../23-cuda-alias-smoke.log`（sandbox `BLOCKED_BY_ENV`）与 `raw/.../24-cuda-alias-smoke-escalated.log`（CUDA `PASS`）。
 
 ## Experiments
 
@@ -208,7 +209,7 @@ P1-M1-T3-IMPL-01A：PASS_PENDING_WEB_REVIEW。Scheduler completed physical front
 
 P1-M1-T3-INTEGRATION-CLOSURE：PASS_PENDING_WEB_REVIEW。GPU 2、真实 `/data/models/Qwen3-0.6B`、MRV2/eager/FA2 运行通过：Worker row `[1,2,3,4,5,6]→[1,2,5,6]`，forward-entry E=62、post-forward/commit E=63；Scheduler canonical row完成相同 dense reconcile，free blocks `10860→10862`，released IDs 3/4 refcount归零，request B真实复用 block 4；request A继续生成并以8 output tokens完成，request B以2 output tokens完成。Production未修改，仅新增 smoke script、closure report并修正文档 commit ordering。
 
-P1-V2-R1-C-EXECUTION-FOUNDATION-01：`32 passed` focused C0–C4/Dense suite、`37 passed` Ragged planner/manager/worker regression、`5 passed` Dense `attn_utils` regression；focused `ruff`、`py_compile` 和 `git diff --check` 均 PASS。完整 changed-file `ruff` 仅报告三个 HEAD 既有问题：`kv_cache_interface.py:289 E501`、`attn_utils.py:94 E501`、`attn_utils.py:671 UP038`，本轮未修改。Address/layout raw evidence、命令与限制见 trace 和 `raw/p1-v2-r1-c-execution-foundation-01-final/`。
+P1-V2-R1-C-EXECUTION-FOUNDATION-01：`32 passed` focused C0–C4/Dense suite、`37 passed` Ragged planner/manager/worker regression、`5 passed` Dense `attn_utils` regression；focused `ruff`、`py_compile` 和 `git diff --check` 均 PASS。closure action 的 escalated CUDA alias smoke `PASS`；placement tensor lifetime contract `FROZEN`。完整 changed-file `ruff` 仅报告三个 HEAD 既有问题：`kv_cache_interface.py:289 E501`、`attn_utils.py:94 E501`、`attn_utils.py:671 UP038`，本轮未修改。Address/layout raw evidence、命令与限制见 trace 和 `raw/p1-v2-r1-c-execution-foundation-01-final/`。
 
 ## Decisions
 

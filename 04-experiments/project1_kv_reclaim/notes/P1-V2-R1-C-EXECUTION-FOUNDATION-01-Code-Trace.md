@@ -8,8 +8,10 @@
 - implementation worktree：`/home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim`。
 - branch：`p1/v2-token-compaction-v026`。
 - reviewed HEAD：`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`。
-- actual start HEAD：`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`。
-- HEAD delta：无；未触发 `DESIGN_CONFLICT`。
+- actual start HEAD：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
+- HEAD delta：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3` 是前一阶段将本 Slice code/trace
+  固化的正常提交，包含 `018e68f...` 之后的完整 C0–C4 实现，不改变 frozen assumptions；未触发
+  `DESIGN_CONFLICT`。
 - start worktree：3 个既存 dirty files：
   - `vllm/v1/core/ragged_kv_cache_manager.py`
   - `vllm/v1/core/sched/output.py`
@@ -42,79 +44,79 @@ virtual_slot = virtual_block_id * B + block_offset
 
 ### [00] Start dirty files — NO_CHANGE_REVIEWED
 
-**File:** `vllm/v1/core/ragged_kv_cache_manager.py`  
-**Symbol:** `RaggedRequestPhysicalState` / `_empty_state`  
-**Change Type:** `NO_CHANGE_REVIEWED`  
-**Reason:** start 前已经存在的中文解释性注释；本 Slice 不涉及 Ragged Scheduler ownership state。  
+**File:** `vllm/v1/core/ragged_kv_cache_manager.py`
+**Symbol:** `RaggedRequestPhysicalState` / `_empty_state`
+**Change Type:** `NO_CHANGE_REVIEWED`
+**Reason:** start 前已经存在的中文解释性注释；本 Slice 不涉及 Ragged Scheduler ownership state。
 **Status:** 保留，未由本 Slice 新增。
 
-**File:** `vllm/v1/core/sched/output.py`  
-**Symbol:** `RaggedKVUpdateData.__post_init__`  
-**Change Type:** `NO_CHANGE_REVIEWED`  
-**Reason:** start 前已经存在的 overlap 说明注释；本 Slice 不修改 transport。  
+**File:** `vllm/v1/core/sched/output.py`
+**Symbol:** `RaggedKVUpdateData.__post_init__`
+**Change Type:** `NO_CHANGE_REVIEWED`
+**Reason:** start 前已经存在的 overlap 说明注释；本 Slice 不修改 transport。
 **Status:** 保留，未由本 Slice 新增。
 
 ### [01] Core geometry hardening
 
-**File:** `vllm/v1/kv_cache_interface.py`  
-**Symbol:** `RaggedAttentionSpec.__post_init__`  
-**Change Type:** `MODIFY`  
-**Before:** 只拒绝 `Hp <= 0` 和 `Hkv % Hp != 0`，`head_size_v` 可与 `head_size` 不同，quantized/padded geometry 可以构造。  
-**After:** 在同一 construction boundary 继续保留 `Hp/Hkv` geometry checks，并拒绝：`head_size_v != head_size`、`kv_quant_mode != KVQuantMode.NONE`、`page_size_padded is not None`。`head_size_v=None` 仍先归一化为 `head_size`。  
-**Contract:** Core 只支持 equal K/V head size、unquantized、unpadded Ragged geometry；不在后续 layout helper 重复检查。  
-**Tests:** `tests/v1/test_ragged_attention_spec.py` 的 valid replace/type test、non-divisible test、unsupported geometry parameterization。  
+**File:** `vllm/v1/kv_cache_interface.py`
+**Symbol:** `RaggedAttentionSpec.__post_init__`
+**Change Type:** `MODIFY`
+**Before:** 只拒绝 `Hp <= 0` 和 `Hkv % Hp != 0`，`head_size_v` 可与 `head_size` 不同，quantized/padded geometry 可以构造。
+**After:** 在同一 construction boundary 继续保留 `Hp/Hkv` geometry checks，并拒绝：`head_size_v != head_size`、`kv_quant_mode != KVQuantMode.NONE`、`page_size_padded is not None`。`head_size_v=None` 仍先归一化为 `head_size`。
+**Contract:** Core 只支持 equal K/V head size、unquantized、unpadded Ragged geometry；不在后续 layout helper 重复检查。
+**Tests:** `tests/v1/test_ragged_attention_spec.py` 的 valid replace/type test、non-divisible test、unsupported geometry parameterization。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [02] CPU scalar address result
 
-**File:** `vllm/v1/ragged_kv_layout.py`  
-**Symbol:** `ResolvedKVAddress`  
-**Change Type:** `ADD`  
-**Before:** 只有 immutable `MemberPlacementMap`，没有可复用的 resolved address result。  
-**After:** 新增 immutable result，字段为 `member_index`、`cluster_index`、`column_index`、`page_depth`、`block_offset`、`physical_page_id`、`virtual_block_id`、`virtual_slot`。  
-**Contract:** result 只表达 CPU/reference address，不携带 GPU pointer、Scheduler state 或 backend dependency。  
-**Tests:** scalar example、boundary、custom placement tests。  
+**File:** `vllm/v1/ragged_kv_layout.py`
+**Symbol:** `ResolvedKVAddress`
+**Change Type:** `ADD`
+**Before:** 只有 immutable `MemberPlacementMap`，没有可复用的 resolved address result。
+**After:** 新增 immutable result，字段为 `member_index`、`cluster_index`、`column_index`、`page_depth`、`block_offset`、`physical_page_id`、`virtual_block_id`、`virtual_slot`。
+**Contract:** result 只表达 CPU/reference address，不携带 GPU pointer、Scheduler state 或 backend dependency。
+**Tests:** scalar example、boundary、custom placement tests。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [03] CPU scalar address resolver
 
-**File:** `vllm/v1/ragged_kv_layout.py`  
-**Symbol:** `resolve_kv_address`  
-**Change Type:** `ADD`  
-**Before:** 没有 `physical_position` 到 physical/virtual address 的 reference oracle。  
-**After:** 按 `MemberPlacementMap` 解析 member 和 `(cluster,column)`；再按 `physical_position // block_size`、`% block_size` 读取 `active_row[cluster][page_depth]`，计算 physical page、virtual block 和 virtual slot。  
-**Reason:** 为后续 D1/D2 提供单一 scalar correctness oracle，避免 runtime helper 重写 identity placement formula。  
-**Contract:** 允许 reserve-before-write 的 position，因此不检查 `physical_position < effective_len`；只拒绝负 position、越过 supplied row depth 和 null page `0`。  
-**Dependency:** `MemberPlacementMap` 是唯一 placement authority；模块保持无 `torch`、Scheduler、Worker、FlashAttention 依赖。  
-**Tests:** `layer=1, head=2, physical_position=21` exact expected；`0/15/16/31` boundary；outside-row；non-identity placement。  
+**File:** `vllm/v1/ragged_kv_layout.py`
+**Symbol:** `resolve_kv_address`
+**Change Type:** `ADD`
+**Before:** 没有 `physical_position` 到 physical/virtual address 的 reference oracle。
+**After:** 按 `MemberPlacementMap` 解析 member 和 `(cluster,column)`；再按 `physical_position // block_size`、`% block_size` 读取 `active_row[cluster][page_depth]`，计算 physical page、virtual block 和 virtual slot。
+**Reason:** 为后续 D1/D2 提供单一 scalar correctness oracle，避免 runtime helper 重写 identity placement formula。
+**Contract:** 允许 reserve-before-write 的 position，因此不检查 `physical_position < effective_len`；只拒绝负 position、越过 supplied row depth 和 null page `0`。
+**Dependency:** `MemberPlacementMap` 是唯一 placement authority；模块保持无 `torch`、Scheduler、Worker、FlashAttention 依赖。
+**Tests:** `layer=1, head=2, physical_position=21` exact expected；`0/15/16/31` boundary；outside-row；non-identity placement。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [04] v0.26-native Ragged Torch layout
 
-**File:** `vllm/v1/attention/backends/ragged_layout.py`  
-**Symbol:** `ragged_physical_cache_shape`  
-**Change Type:** `ADD`  
-**Before:** 没有 dedicated Ragged physical shape helper。  
-**After:** 返回 `[P, Hp, B, 2D]`，不调用 Dense backend shape/stride API。  
-**Contract:** v0.26 packed K/V content 继续使用最后一维 `2D`，不复制 Tangram `[2,P,Hp,B,D]` rank。  
-**Tests:** `_reshape_kv_cache` raw materialization shape assertion。  
+**File:** `vllm/v1/attention/backends/ragged_layout.py`
+**Symbol:** `ragged_physical_cache_shape`
+**Change Type:** `ADD`
+**Before:** 没有 dedicated Ragged physical shape helper。
+**After:** 返回 `[P, Hp, B, 2D]`，不调用 Dense backend shape/stride API。
+**Contract:** v0.26 packed K/V content 继续使用最后一维 `2D`，不复制 Tangram `[2,P,Hp,B,D]` rank。
+**Tests:** `_reshape_kv_cache` raw materialization shape assertion。
 **Status:** IMPLEMENTED / TESTED。
 
-**File:** `vllm/v1/attention/backends/ragged_layout.py`  
-**Symbol:** `as_virtual_block_view`  
-**Change Type:** `ADD`  
-**Before:** 没有 physical-to-virtual zero-copy view。  
-**After:** 对 contiguous `[P,Hp,B,2D]` 输入直接调用 `.view(P*Hp,1,B,2D)`；拒绝错误 rank、错误 `Hp` 或 non-contiguous input。没有 `reshape/contiguous/clone/copy` fallback。  
-**Contract:** `physical[p,c,t,x]` 与 `virtual[p*Hp+c,0,t,x]` 必须 alias 同一 storage。  
-**Tests:** `Hp=1/2/4` 的 shape/stride/data pointer/mutation alias，以及 non-contiguous rejection。  
+**File:** `vllm/v1/attention/backends/ragged_layout.py`
+**Symbol:** `as_virtual_block_view`
+**Change Type:** `ADD`
+**Before:** 没有 physical-to-virtual zero-copy view。
+**After:** 对 contiguous `[P,Hp,B,2D]` 输入直接调用 `.view(P*Hp,1,B,2D)`；拒绝错误 rank、错误 `Hp` 或 non-contiguous input。没有 `reshape/contiguous/clone/copy` fallback。
+**Contract:** `physical[p,c,t,x]` 与 `virtual[p*Hp+c,0,t,x]` 必须 alias 同一 storage。
+**Tests:** `Hp=1/2/4` 的 shape/stride/data pointer/mutation alias，以及 non-contiguous rejection。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [05] Member metadata transforms
 
-**File:** `vllm/v1/attention/backends/ragged_layout.py`  
-**Symbol:** `placement_to_tensors`、`member_virtual_block_table`、`member_virtual_slots`、`member_seq_lens`  
-**Change Type:** `ADD`  
-**Before:** 没有 Torch execution representation；只有 tuple-based `MemberPlacementMap`。  
+**File:** `vllm/v1/attention/backends/ragged_layout.py`
+**Symbol:** `placement_to_tensors`、`member_virtual_block_table`、`member_virtual_slots`、`member_seq_lens`
+**Change Type:** `ADD`
+**Before:** 没有 Torch execution representation；只有 tuple-based `MemberPlacementMap`。
 **After:** 从 `MemberPlacementMap` 派生 `member_to_cluster/member_to_column` tensors，并实现：
 
 ```text
@@ -123,45 +125,93 @@ virtual_slot = virtual_block_id * B + block_offset
 [R,C]          -> [R,M]
 ```
 
-`member_virtual_block_table` 对 physical page `0` 保留 null/padding `0`；`member_virtual_slots` 只对 `PAD_SLOT_ID=-1` 做 sentinel preservation。  
-**Contract:** vector transforms 不产生第二套 placement authority；custom valid placement 与 identity placement 都必须工作。  
+`member_virtual_block_table` 对 physical page `0` 保留 null/padding `0`；`member_virtual_slots` 只对 `PAD_SLOT_ID=-1` 做 sentinel preservation。
+**Contract:** vector transforms 不产生第二套 placement authority；custom valid placement 与 identity placement 都必须工作。
 **Tests:** identity/custom table、normal/block-boundary/PAD slot、non-uniform sequence lengths；测试内独立 scalar loop 与 vector result exact equal。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [06] Ragged backing materialization
 
-**File:** `vllm/v1/worker/gpu/attn_utils.py`  
-**Symbol:** `_reshape_kv_cache`  
-**Change Type:** `MODIFY`  
-**Before:** 所有 `AttentionSpec` 都进入 backend `get_kv_cache_shape(..., Hkv, ...)` 和 Dense stride-order path。  
-**After:** `RaggedAttentionSpec` 使用 dedicated `[P,Hp,B,2D]` view；不调用 backend Dense shape。只保留必要 runtime fence：`kernel_block_size == spec.block_size`、raw backing page alignment、packed Ragged path 直接 fail。Dense path unchanged。  
-**Reason:** Planner 已按 Hp-wide page bytes 分配；继续用 Dense Hkv shape 会把同一 raw allocation 解释成错误 geometry。  
-**Contract:** raw allocation 的 `P = raw_bytes / spec.page_size_bytes`；Ragged view 与 raw allocation alias，同一 backing 可由多个 layers 共享。  
-**Dependency:** C0 geometry contract、`ragged_physical_cache_shape`、现有 `_allocate_kv_cache` 的 `shared_by` aliasing。  
-**Tests:** fake backend 禁止调用 Dense shape；多个 layer 使用同一 raw backing；shape/data pointer/virtual alias；既有 Dense padded/HND/quantized tests。  
+**File:** `vllm/v1/worker/gpu/attn_utils.py`
+**Symbol:** `_reshape_kv_cache`
+**Change Type:** `MODIFY`
+**Before:** 所有 `AttentionSpec` 都进入 backend `get_kv_cache_shape(..., Hkv, ...)` 和 Dense stride-order path。
+**After:** `RaggedAttentionSpec` 使用 dedicated `[P,Hp,B,2D]` view；不调用 backend Dense shape。只保留必要 runtime fence：`kernel_block_size == spec.block_size`、raw backing page alignment、packed Ragged path 直接 fail。Dense path unchanged。
+**Reason:** Planner 已按 Hp-wide page bytes 分配；继续用 Dense Hkv shape 会把同一 raw allocation 解释成错误 geometry。
+**Contract:** raw allocation 的 `P = raw_bytes / spec.page_size_bytes`；Ragged view 与 raw allocation alias，同一 backing 可由多个 layers 共享。
+**Dependency:** C0 geometry contract、`ragged_physical_cache_shape`、现有 `_allocate_kv_cache` 的 `shared_by` aliasing。
+**Tests:** fake backend 禁止调用 Dense shape；多个 layer 使用同一 raw backing；shape/data pointer/virtual alias；既有 Dense padded/HND/quantized tests。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [07] Dense-only mixed-layout guard
 
-**File:** `vllm/v1/worker/gpu/attn_utils.py`  
-**Symbol:** `_align_mixed_attention_kv_cache_views`  
-**Change Type:** `MODIFY`  
-**Before:** 对所有 `AttentionSpec` 尝试查询 backend block dimension；Ragged dedicated view 没有必要进入 Dense mixed-layout restride。  
-**After:** `RaggedAttentionSpec` 在该 Dense-only alignment helper 中直接跳过。  
-**Reason:** 避免 Ragged backing 被 Dense K/V-first/blocks-first alignment 误处理；当前 planner 仍禁止 Ragged mixed groups。  
-**Tests:** Ragged `_reshape_kv_cache` shared-backing test；Dense regression suite。  
+**File:** `vllm/v1/worker/gpu/attn_utils.py`
+**Symbol:** `_align_mixed_attention_kv_cache_views`
+**Change Type:** `MODIFY`
+**Before:** 对所有 `AttentionSpec` 尝试查询 backend block dimension；Ragged dedicated view 没有必要进入 Dense mixed-layout restride。
+**After:** `RaggedAttentionSpec` 在该 Dense-only alignment helper 中直接跳过。
+**Reason:** 避免 Ragged backing 被 Dense K/V-first/blocks-first alignment 误处理；当前 planner 仍禁止 Ragged mixed groups。
+**Tests:** Ragged `_reshape_kv_cache` shared-backing test；Dense regression suite。
 **Status:** IMPLEMENTED / TESTED。
 
 ### [08] Independent scalar vector-oracle tests
 
-**File:** `tests/v1/test_ragged_kv_layout.py`  
-**Symbol:** `_scalar_member_virtual_block_table`、`_scalar_member_virtual_slots`  
-**Change Type:** `ADD`  
-**Before:** C4 table/slot assertions主要依赖手写 expected tensor，不能直接表达 vector result 与独立 scalar reference 的逐项一致性。  
-**After:** 测试内增加简单 Python scalar loops，分别计算 physical page/column 到 virtual block、physical slot 到 virtual slot，并对 identity/custom placement、block boundary、`PAD_SLOT_ID=-1` 和 non-uniform `E` 做 exact comparison。  
-**Reason:** 直接满足 T7/T8 的 vector-vs-scalar oracle contract；不向 production code 添加测试专用 abstraction。  
-**Tests:** 最终 focused C0–C4/Dense suite `32 passed`。  
+**File:** `tests/v1/test_ragged_kv_layout.py`
+**Symbol:** `_scalar_member_virtual_block_table`、`_scalar_member_virtual_slots`
+**Change Type:** `ADD`
+**Before:** C4 table/slot assertions主要依赖手写 expected tensor，不能直接表达 vector result 与独立 scalar reference 的逐项一致性。
+**After:** 测试内增加简单 Python scalar loops，分别计算 physical page/column 到 virtual block、physical slot 到 virtual slot，并对 identity/custom placement、block boundary、`PAD_SLOT_ID=-1` 和 non-uniform `E` 做 exact comparison。
+**Reason:** 直接满足 T7/T8 的 vector-vs-scalar oracle contract；不向 production code 添加测试专用 abstraction。
+**Tests:** 最终 focused C0–C4/Dense suite `32 passed`。
 **Status:** IMPLEMENTED / TESTED。
+
+### [09] Tiny CUDA backing / alias smoke
+
+**File:** `04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/23-cuda-alias-smoke.log`
+**Symbol:** `ragged_physical_cache_shape`、`as_virtual_block_view`
+**Change Type:** `NO_CHANGE_REVIEWED`
+**Before:** C2 仅有 CPU tensor 的 shape/stride/storage alias evidence；真实 CUDA backing 尚未验证。
+**After:** 使用 `P=3, Hp=2, B=4, 2D=6` 的最小 CUDA smoke 命令；环境观察到 `torch.cuda.is_available() == False`、`device_count == 0`，命令明确输出 `CUDA_SMOKE: BLOCKED_BY_ENV` 并未构造 CUDA tensor。
+**Reason:** 按 closure action 要求尝试真实 CUDA alias proof；无 CUDA 时保持 fail-closed，不改实现绕过环境。
+**Contract:** 若 CUDA 可用，smoke 将检查 exact shape/stride、data/storage pointer alias 和 physical mutation → virtual read；本次这些 CUDA-only assertions 未执行。
+**Tests:** tiny CUDA smoke；结果 `BLOCKED_BY_ENV`。
+**Status:** BLOCKED_BY_ENV / NO_SOURCE_CHANGE。
+
+### [10] Placement tensor lifetime contract
+
+**File:** `vllm/v1/attention/backends/ragged_layout.py`、`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md`
+**Symbol:** `placement_to_tensors`
+**Change Type:** `NO_CHANGE_REVIEWED`
+**Before:** helper 可从 `MemberPlacementMap` tuple 派生 Torch tensors，但没有明确 production lifetime contract。
+**After:** 冻结后续 D1/D2 contract：`MemberPlacementMap` 只在 initialization/construction 阶段派生一次 `member_to_cluster`、`member_to_column` tensors；production hot path 每 step/每 layer 必须 cache/reuse，禁止重复 `torch.tensor(...)` construction。
+**Reason:** 避免重复 CPU tensor allocation、潜在 H2D copy 和 CUDA Graph pointer instability。
+**Contract:** `MemberPlacementMap → initialize once → cached placement tensors → every step reuse`；本 Slice 不创建 `RaggedGeometry`、cache manager、persistent step buffer 或 CUDA Graph machinery。
+**Tests:** 本轮未实现 D1/D2 owner；contract 记录为 frozen for next initialization Slice。
+**Status:** FROZEN / NO_SOURCE_CHANGE。
+
+### [11] Escalated CUDA backing / alias smoke closure
+
+**File:** `04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/24-cuda-alias-smoke-escalated.log`
+**Symbol:** `ragged_physical_cache_shape`、`as_virtual_block_view`
+**Change Type:** `NO_CHANGE_REVIEWED`
+**Before:** sandbox 内第一次 smoke 因 `cuda_available=False` 记录为 `BLOCKED_BY_ENV`，见 `23-cuda-alias-smoke.log`。
+**After:** 在用户授权的提升权限环境中重跑同一最小 smoke；`cuda_available=True`、`device_count=3`，实际 CUDA tensor 观察到：
+
+```text
+physical_shape=(3, 2, 4, 6)
+physical_stride=(48, 24, 6, 1)
+virtual_shape=(6, 1, 4, 6)
+virtual_stride=(24, 24, 6, 1)
+data_ptr_alias=PASS
+storage_ptr_alias=PASS
+alias_mutation=-123.0
+CUDA_SMOKE: PASS
+```
+
+**Reason:** 完成 closure action 的真实 CUDA backing proof；未启动 Engine、模型、FlashAttention 或 benchmark。
+**Contract:** CUDA physical `[P,Hp,B,2D]` 通过 `.view()` 得到 virtual `[P*Hp,1,B,2D]`，两者共享 data/storage pointer，physical mutation 能由对应 virtual address 读取。
+**Tests:** 用户授权后的 escalated tiny CUDA smoke；PASS。
+**Status:** PASS / NO_SOURCE_CHANGE。
 
 ## 4. Address Evidence
 
@@ -253,12 +303,13 @@ alias_mutation=-123.0
 - actual Ragged KV write：未调用 `reshape_and_cache_flash`，留给 `P1-V2-R1-D1-RAGGED-KV-WRITE-01`。
 - actual FlashAttention read：未实现 member-major adapter，留给 D2/D3。
 - real Engine identity：production `Attention.get_kv_cache_spec()` 仍未根据 `page_group_size` 激活 Ragged，符合本 Slice out-of-scope。
-- GPU backing on real CUDA allocation：本轮 focused backing test 使用 CPU tensor；layout contract 已通过 Torch view alias proof，但未做 engine/GPU smoke。
+- GPU backing on real CUDA allocation：先前 sandbox smoke 为 `BLOCKED_BY_ENV`，提升权限后的真实 CUDA smoke 已 PASS；未覆盖 Engine allocation 或 kernel integration。
 - scheduler/model-runner production wiring、prefill/mixed、quantized/unequal K/V、TP2、prefix cache、Triton/CUDA Graph：均未覆盖。
 
 ## 10. Slice 状态与下一步
 
-本 Slice 的实现和 focused verification 已完成，状态为：`PASS_PENDING_WEB_REVIEW`。
+本 Slice 的实现和 focused verification 已完成；本轮 closure action 已完成真实 CUDA alias smoke
+与 placement lifetime contract freeze，状态仍为：`PASS_PENDING_WEB_REVIEW`。
 
 ```text
 Next Allowed Action: WEB_REVIEW_CURRENT_SLICE
