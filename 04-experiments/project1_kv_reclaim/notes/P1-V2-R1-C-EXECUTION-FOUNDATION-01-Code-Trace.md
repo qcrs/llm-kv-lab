@@ -7,10 +7,10 @@
 - 日期：2026-09-21（Asia/Shanghai）。
 - implementation worktree：`/home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim`。
 - branch：`p1/v2-token-compaction-v026`。
-- reviewed HEAD：`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`。
+- reviewed HEAD：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
 - actual start HEAD：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
 - HEAD delta：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3` 是前一阶段将本 Slice code/trace
-  固化的正常提交，包含 `018e68f...` 之后的完整 C0–C4 实现，不改变 frozen assumptions；未触发
+  固化的正常提交，包含 C0–C4 完整实现，不改变 frozen assumptions；未触发
   `DESIGN_CONFLICT`。
 - start worktree：3 个既存 dirty files：
   - `vllm/v1/core/ragged_kv_cache_manager.py`
@@ -300,20 +300,21 @@ alias_mutation=-123.0
 
 ## 9. NOT YET PROVEN
 
-- actual Ragged KV write：未调用 `reshape_and_cache_flash`，留给 `P1-V2-R1-D1-RAGGED-KV-WRITE-01`。
-- actual FlashAttention read：未实现 member-major adapter，留给 D2/D3。
+- actual Ragged KV write：C 阶段未调用 `reshape_and_cache_flash`；已由完整 D Slice 关闭。
+- actual FlashAttention read：C 阶段未实现 member-major adapter；已由完整 D Slice 关闭。
 - real Engine identity：production `Attention.get_kv_cache_spec()` 仍未根据 `page_group_size` 激活 Ragged，符合本 Slice out-of-scope。
 - GPU backing on real CUDA allocation：先前 sandbox smoke 为 `BLOCKED_BY_ENV`，提升权限后的真实 CUDA smoke 已 PASS；未覆盖 Engine allocation 或 kernel integration。
 - scheduler/model-runner production wiring、prefill/mixed、quantized/unequal K/V、TP2、prefix cache、Triton/CUDA Graph：均未覆盖。
 
 ## 10. Slice 状态与下一步
 
-本 Slice 的实现和 focused verification 已完成；本轮 closure action 已完成真实 CUDA alias smoke
-与 placement lifetime contract freeze，状态仍为：`PASS_PENDING_WEB_REVIEW`。
+本 Slice 的实现和 focused verification 已完成；真实 CUDA alias smoke 与 placement lifetime
+contract freeze 均已关闭。ChatGPT Web architecture review 最终结论：`PASS / CLOSED`。
+C final implementation commit：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
 
 ```text
-Next Allowed Action: WEB_REVIEW_CURRENT_SLICE
-Proposed Next Action: Web review current C0-C4 diff/evidence; only after review consider P1-V2-R1-D1-RAGGED-KV-WRITE-01.
+Next Allowed Action: P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
+Proposed Next Action: Execute the approved complete D Slice; after D, return to WEB_REVIEW_CURRENT_SLICE.
 ```
 
 本记录不批准下一 Slice，不启用 production Ragged runtime，也不改变 P1/P2 Gate。

@@ -62,15 +62,15 @@ post_reclaim_q_len: 1
 ~~~yaml
 project_version: V2 / R1
 current_milestone: P1 V2 / R1 execution-addressing foundation
-current_parent_task: P1-V2-R1-C-EXECUTION-FOUNDATION-01
+current_parent_task: P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
 execution_mode: SLICE_EXECUTE
-current_slice: P1-V2-R1-C-EXECUTION-FOUNDATION-01
-parent_task_status: IN_PROGRESS / REVIEW_REQUIRED
+current_slice: P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
+parent_task_status: REVIEW_REQUIRED
 slice_status: PASS_PENDING_WEB_REVIEW
-approved_implementation_slice: P1-V2-R1-C-EXECUTION-FOUNDATION-01
+approved_implementation_slice: P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
 last_completed_gate: P1-V1-CORE-GATE-REVIEW-01 PASS / ACCEPTED
 next_parent_task: P1-V2-DESIGN-REVIEW-01
-proposed_next_parent_task: P1-V2-R1-D1-RAGGED-KV-WRITE-01 (only after Web review)
+proposed_next_parent_task: P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01 (only after Web review)
 ~~~
 
 ## Approved Designs
@@ -175,10 +175,11 @@ V1 Core Gate、T3 targeted/regression、真实 Engine closure 与 freeze evidenc
 - `04-experiments/project1_kv_reclaim/notes/P1-M1-T2-IMPL-01A-R1-Final-Row-Reclaim-Composition-实施记录.md`
 - `04-experiments/project1_kv_reclaim/notes/P1-CODE-DIFF-TRACKER.md`
 
-## Current Slice — P1-V2-R1-C-EXECUTION-FOUNDATION-01
+## Closed Slice — P1-V2-R1-C-EXECUTION-FOUNDATION-01
 
-- `REVIEWED_HEAD` / `ACTUAL_START_HEAD`：`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`；本轮无 HEAD delta，未触发 `DESIGN_CONFLICT`。
-- 当前结果：`PASS_PENDING_WEB_REVIEW`；本 Slice 只关闭 C0–C4 execution-addressing foundation，不启用 production Ragged dispatch。
+- Web architecture review 结论：`PASS / CLOSED`。
+- C final implementation commit：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
+- 本 Slice 只关闭 C0–C4 execution-addressing foundation，不启用 production Ragged dispatch。
 - 本 Slice 修改的 source：`vllm/v1/kv_cache_interface.py`、`vllm/v1/ragged_kv_layout.py`、`vllm/v1/attention/backends/ragged_layout.py`（新增）、`vllm/v1/worker/gpu/attn_utils.py`。
 - 本 Slice 修改的 tests：`tests/v1/test_ragged_attention_spec.py`、`tests/v1/test_ragged_kv_layout.py`、`tests/v1/worker/test_attn_utils.py`。
 - 开始前已存在且只做 `NO_CHANGE_REVIEWED` 的 dirty 内容：`vllm/v1/core/ragged_kv_cache_manager.py`、`vllm/v1/core/sched/output.py`，以及 `vllm/v1/ragged_kv_layout.py` 中既存解释性注释；未回滚或覆盖。
@@ -210,6 +211,20 @@ P1-M1-T3-IMPL-01A：PASS_PENDING_WEB_REVIEW。Scheduler completed physical front
 P1-M1-T3-INTEGRATION-CLOSURE：PASS_PENDING_WEB_REVIEW。GPU 2、真实 `/data/models/Qwen3-0.6B`、MRV2/eager/FA2 运行通过：Worker row `[1,2,3,4,5,6]→[1,2,5,6]`，forward-entry E=62、post-forward/commit E=63；Scheduler canonical row完成相同 dense reconcile，free blocks `10860→10862`，released IDs 3/4 refcount归零，request B真实复用 block 4；request A继续生成并以8 output tokens完成，request B以2 output tokens完成。Production未修改，仅新增 smoke script、closure report并修正文档 commit ordering。
 
 P1-V2-R1-C-EXECUTION-FOUNDATION-01：`32 passed` focused C0–C4/Dense suite、`37 passed` Ragged planner/manager/worker regression、`5 passed` Dense `attn_utils` regression；focused `ruff`、`py_compile` 和 `git diff --check` 均 PASS。closure action 的 escalated CUDA alias smoke `PASS`；placement tensor lifetime contract `FROZEN`。完整 changed-file `ruff` 仅报告三个 HEAD 既有问题：`kv_cache_interface.py:289 E501`、`attn_utils.py:94 E501`、`attn_utils.py:671 UP038`，本轮未修改。Address/layout raw evidence、命令与限制见 trace 和 `raw/p1-v2-r1-c-execution-foundation-01-final/`。
+
+P1-V2-R1-C-EXECUTION-FOUNDATION-01：Web architecture review 已完成，最终状态为 `PASS / CLOSED`；final implementation commit 为 `db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
+
+## Current Slice — P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
+
+- D 状态：`PASS_PENDING_WEB_REVIEW`；D-WRITE、D-DECODE、D-PREFILL-MIXED 均在 focused real-CUDA closure 中通过。
+- D actual start HEAD：`dc4287411704abc512f6cca3ca669c7d9ec254c5`；worktree 保留用户既有 HEAD delta，未创建新 commit。
+- 主要 source：`vllm/v1/attention/backends/ragged_layout.py`、`vllm/v1/attention/backends/ragged_forward.py`。
+- 主要 tests：`tests/v1/attention/ragged_reference.py`、`tests/v1/attention/test_ragged_execution.py`、`tests/v1/test_ragged_kv_layout.py`。
+- Code Trace：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-D-RAGGED-GPU-EXECUTION-01-Code-Trace.md`。
+- raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-d-ragged-gpu-execution-01/`。
+- real CUDA execution/layout：`29 passed`；CPU/C/Ragged/Dense focused：`71 passed, 6 skipped`；Dense `attn_utils`：`5 passed`；static checks PASS。
+- 一次 `test_attention_backends.py` 全量尝试因缺少远端 `meta-llama/Meta-Llama-3-8B` 本地配置在第 6 个测试失败；前 5 个通过，未归因于 D source。
+- 未启用 production Ragged dispatch；未修改 Scheduler、ModelRunner、ForwardContext、Dense `flash_attn.py` 或新增 custom op。
 
 ## Decisions
 
@@ -251,7 +266,7 @@ rollback_point: p1-v1-core-accepted
 
 ## Exact Next Action
 
-当前 Slice 停在 Web review；不得自动开始 `P1-V2-R1-D1-RAGGED-KV-WRITE-01`，不得启用 production Ragged runtime。
+D Slice 已完成，等待 `WEB_REVIEW_CURRENT_SLICE`；不得启用 production Ragged runtime 或进入 E。
 
 ## Next Allowed Action
 
@@ -259,9 +274,9 @@ WEB_REVIEW_CURRENT_SLICE
 
 ## Proposed Next Action
 
-Web review 当前 C0–C4 diff/evidence；review 通过后再由用户 + ChatGPT Web/Work 决定
-`P1-V2-R1-D1-RAGGED-KV-WRITE-01`。V1 Core remains frozen；任何 V1 change 仍需
-`P1-V1-CORE-REOPEN-XX`。
+完成 D 后固定回到 `WEB_REVIEW_CURRENT_SLICE`；建议 review 通过后再考虑
+`P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01`。V1 Core remains frozen；任何 V1 change
+仍需 `P1-V1-CORE-REOPEN-XX`。
 
 ## State Write Authority
 

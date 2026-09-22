@@ -2,6 +2,9 @@
 
 ## 已通过
 
+C final status：`PASS / CLOSED`；final implementation commit：
+`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
+
 - `VLLM_TARGET_DEVICE=cpu python -m pytest -q tests/v1/test_ragged_attention_spec.py tests/v1/test_ragged_kv_layout.py tests/v1/worker/test_attn_utils.py`：`32 passed`。
 - `VLLM_TARGET_DEVICE=cpu python -m pytest -q tests/v1/core/test_ragged_kv_cache_planner.py tests/v1/core/test_ragged_kv_cache_manager.py tests/v1/worker/test_ragged_kv_state.py`：`37 passed`。
 - `VLLM_TARGET_DEVICE=cpu python -m pytest -q tests/v1/worker/test_attn_utils.py`：`5 passed`。
@@ -10,6 +13,9 @@
 - `git diff --check`：PASS。
 - tiny CUDA backing/alias smoke（用户授权提升权限）：`CUDA_SMOKE: PASS`。
 - `PLACEMENT_LIFETIME_CONTRACT`：`FROZEN`；D1/D2 hot path 必须复用 initialization-time placement tensors，不得每 step/layer 重新 `torch.tensor(...)`。
+- D real CUDA execution/layout：`29 passed`；覆盖 exact-cell write、decode、prefill、uneven prefill、mixed、non-uniform E 和 custom placement。
+- D CPU/C/Ragged/Dense focused：`71 passed, 6 skipped`。
+- Dense `attn_utils` regression：`5 passed`。
 
 ## 证据与限制
 
@@ -25,3 +31,5 @@ CUDA raw evidence：`23-cuda-alias-smoke.log` 首次 sandbox 运行因 device �
 完整 changed-file `ruff` 仍会报告三个 HEAD 既有问题：
 `vllm/v1/kv_cache_interface.py:289 E501`、`vllm/v1/worker/gpu/attn_utils.py:94 E501`、
 `vllm/v1/worker/gpu/attn_utils.py:671 UP038`；本 Slice 未修改这些无关 debt。
+
+D raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-d-ragged-gpu-execution-01/`。

@@ -1,6 +1,8 @@
 01-projects/project1-physical-kv-reclamation-vllm/PROJECT_STATE.md
 04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md
+04-experiments/project1_kv_reclaim/notes/P1-V2-R1-D-RAGGED-GPU-EXECUTION-01-Code-Trace.md
 04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/
+04-experiments/project1_kv_reclaim/raw/p1-v2-r1-d-ragged-gpu-execution-01/
 04-experiments/project1_kv_reclaim/handoffs/LATEST/
 
 Implementation worktree source/test paths are listed in `DIFF-SUMMARY.md` and the Code Trace.

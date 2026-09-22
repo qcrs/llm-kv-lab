@@ -6,17 +6,21 @@
 
 ```text
 P1 V1/Core = PASS / ACCEPTED / FROZEN
-Current Slice = P1-V2-R1-C-EXECUTION-FOUNDATION-01
+Closed Slice = P1-V2-R1-C-EXECUTION-FOUNDATION-01
+Closed Slice Status = PASS / CLOSED
+Current Slice = P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
 Slice Status = PASS_PENDING_WEB_REVIEW
 Canonical V1 restore point = `cd444b72ceecb2496bf015baf8c18bf883151fa1`
 Current branch = `p1/v2-token-compaction-v026`
-Current HEAD = `db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`
+C final implementation commit = `db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`
+D start HEAD = `dc4287411704abc512f6cca3ca669c7d9ec254c5`
 Next Allowed Action = WEB_REVIEW_CURRENT_SLICE
 ```
 
-## 当前 V2 Slice
+## 已关闭的 C Slice
 
-本轮只关闭 C0–C4 execution-addressing foundation，不启用 production Ragged runtime。已
+Web architecture review 已将 C 判定为 `PASS / CLOSED`。C 只关闭 C0–C4
+execution-addressing foundation，不启用 production Ragged runtime。已
 完成 geometry hardening、CPU scalar physical address oracle、Hp-wide zero-copy layout、
 shared backing materialization 和 member metadata transforms。focused C0–C4/Dense 为
 `32 passed`，Ragged state regression 为 `37 passed`，Dense `attn_utils` regression 为
@@ -69,6 +73,13 @@ Graph、KV connector/offload。其余配置为 `NOT VALIDATED`；retention polic
 compaction、Triton/CUDA compaction、性能结论、HBM/OS return 与未授权的下一 Slice 为
 `OUT OF SCOPE`。
 
+## 当前 D Slice
+
+当前执行已批准的完整 Slice `P1-V2-R1-D-RAGGED-GPU-EXECUTION-01`，覆盖
+`D-WRITE`、`D-DECODE`、`D-PREFILL-MIXED`，但不做 production activation。
+D 已完成 focused real-CUDA correctness closure，当前状态为 `PASS_PENDING_WEB_REVIEW`；
+raw evidence 位于 `04-experiments/project1_kv_reclaim/raw/p1-v2-r1-d-ragged-gpu-execution-01/`。
+
 ## 冻结规则
 
 ```text
@@ -76,5 +87,5 @@ DO NOT MODIFY V1 CORE WITHOUT REOPEN
 ```
 
 任何 S1/S2/S3/T2/T3 修改必须先创建 `P1-V1-CORE-REOPEN-XX`，说明 reason、affected
-invariant、affected evidence 和 regression plan。当前 V2 Slice 已执行完毕，下一动作固定
-为 `WEB_REVIEW_CURRENT_SLICE`；不得自动进入 D1。
+invariant、affected evidence 和 regression plan。D 完成后必须停在
+`WEB_REVIEW_CURRENT_SLICE`；不得自动进入 E。

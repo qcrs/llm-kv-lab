@@ -2,8 +2,8 @@
 
 ## 当前 Slice
 
-`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 已完成实现与 focused verification，当前结论为
-`PASS_PENDING_WEB_REVIEW`。本轮只关闭 C0–C4 execution-addressing foundation：Core geometry
+`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 已完成 ChatGPT Web architecture review，最终结论为
+`PASS / CLOSED`。C 只关闭 C0–C4 execution-addressing foundation：Core geometry
 hardening、CPU scalar address oracle、v0.26-native zero-copy layout、Ragged backing
 materialization、member metadata transforms。
 
@@ -11,14 +11,15 @@ materialization、member metadata transforms。
 
 - implementation worktree：`/home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim`
 - branch：`p1/v2-token-compaction-v026`
-- `REVIEWED_HEAD` / `ACTUAL_START_HEAD`：`018e68f47f3bcdfb0b935f5ffe0e579b033c6268`
-- HEAD delta：无。
+- C final implementation commit：`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`
+- D actual start HEAD：`dc4287411704abc512f6cca3ca669c7d9ec254c5`
+- D start HEAD delta：仅用户已有解释性注释，没有 C behavior delta。
 - upstream parent：`568afb3a13806beb53bb2e6bd518269357b237c0`
 - Python：3.10.20；Torch：2.11.0+cu129；Torch CUDA runtime：12.9。
 - 开始前已存在的 dirty 内容保留；未回滚用户变更。
 
 P1 V1/Core accepted checkpoint 仍是 `cd444b72ceecb2496bf015baf8c18bf883151fa1` /
-`p1-v1-core-accepted`；本 Slice 没有创建 commit、tag 或改变该 restore point。
+`p1-v1-core-accepted`；C 没有改变该 restore point。
 
 ## Evidence
 
@@ -42,9 +43,10 @@ CUDA raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution
 real Engine GPU backing、Scheduler/ModelRunner production wiring、prefill/mixed、quantized/
 unequal K/V、TP2、Triton/CUDA Graph 和 benchmark。
 
-## 下一动作
+## 当前动作
 
-`Next Allowed Action: WEB_REVIEW_CURRENT_SLICE`
+`P1-V2-R1-D-RAGGED-GPU-EXECUTION-01` 已完成 focused real-CUDA correctness closure，当前状态为
+`PASS_PENDING_WEB_REVIEW`。
 
-Web review 当前 C0–C4 diff/evidence 后，才由用户 + ChatGPT Web/Work 决定是否进入
-`P1-V2-R1-D1-RAGGED-KV-WRITE-01`。本 handoff 不批准下一 Slice。
+证据根：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-d-ragged-gpu-execution-01/`；
+`Next Allowed Action: WEB_REVIEW_CURRENT_SLICE`。本 handoff 不批准 E。

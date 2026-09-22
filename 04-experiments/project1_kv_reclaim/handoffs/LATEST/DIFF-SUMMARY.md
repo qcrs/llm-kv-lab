@@ -2,7 +2,8 @@
 
 ## 当前 Slice
 
-`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 在 worktree 中保留未提交变更；没有创建 commit。
+`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 已 `PASS / CLOSED`；C final implementation commit 为
+`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
 
 | 文件 | 变更 | 目的 |
 |---|---|---|
@@ -30,3 +31,17 @@
 
 Code Trace：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-C-EXECUTION-FOUNDATION-01-Code-Trace.md`。
 Raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/`。
+
+当前已完成 `P1-V2-R1-D-RAGGED-GPU-EXECUTION-01`；D 状态为 `PASS_PENDING_WEB_REVIEW`。
+
+## D Slice
+
+| 文件 | 变更 | 目的 |
+|---|---|---|
+| `vllm/v1/attention/backends/ragged_layout.py` | MODIFY | cached placement tensor API、group physical slots、`RaggedStepViews`、source/post-write metadata。 |
+| `vllm/v1/attention/backends/ragged_forward.py` | ADD | real `reshape_and_cache_flash` write、FA2 decode/prefill/mixed read。 |
+| `tests/v1/attention/ragged_reference.py` | ADD | 独立 scalar address / PyTorch attention reference。 |
+| `tests/v1/attention/test_ragged_execution.py` | ADD | D-WRITE、D-DECODE、D-PREFILL-MIXED real CUDA coverage。 |
+| `tests/v1/test_ragged_kv_layout.py` | MODIFY | 适配 cached-tensor helper signature。 |
+
+D production activation 保持 OFF。

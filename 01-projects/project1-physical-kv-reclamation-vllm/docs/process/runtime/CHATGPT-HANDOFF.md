@@ -2,10 +2,11 @@
 
 ## 当前 Slice
 
-`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 当前状态为 `PASS_PENDING_WEB_REVIEW`。实现位于
+`P1-V2-R1-C-EXECUTION-FOUNDATION-01` 已经 Web architecture review，最终状态为
+`PASS / CLOSED`。实现位于
 `/home/qcrs/learning/llm-kv-lab/worktrees/p1-vllm-reclaim`，branch 为
-`p1/v2-token-compaction-v026`，`REVIEWED_HEAD` 与 `ACTUAL_START_HEAD` 均为
-`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`；该提交是前一阶段将 C0–C4 实现与 trace 固化的正常提交。
+`p1/v2-token-compaction-v026`，C final implementation commit 为
+`db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
 
 本 Slice 已关闭 C0–C4 execution-addressing foundation：
 
@@ -25,17 +26,22 @@
 - `04-experiments/project1_kv_reclaim/raw/p1-v2-r1-c-execution-foundation-01-final/`
 
 P1 V1/Core accepted checkpoint 仍为 `cd444b72ceecb2496bf015baf8c18bf883151fa1` /
-`p1-v1-core-accepted`；本 Slice 没有创建 commit，也没有修改 V1 accepted behavior。
+`p1-v1-core-accepted`；C 没有修改 V1 accepted behavior。
 
 ## 未覆盖
 
-未实现 Ragged KV write、FlashAttention read、production Ragged activation、真实 GPU Engine
-identity、Scheduler/ModelRunner wiring、prefill/mixed、quantized/unequal K/V、TP2、
-Triton/CUDA Graph 或 benchmark。
+未覆盖 production Ragged activation、真实 GPU Engine identity、Scheduler/ModelRunner wiring、
+ForwardContext real Ragged dispatch、continuous batching、chunked-prefill E2E、quantized/
+unequal K/V、TP2、Triton/CUDA Graph、physical compaction/free/reuse 或 benchmark。
 
-## Next Allowed Action
+D focused closure 已证明 real CUDA KV write/read、decode、prefill/mixed、non-uniform E、
+custom placement 和 zero-copy virtual cache contract。证据：
+`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-d-ragged-gpu-execution-01/`。
 
-`WEB_REVIEW_CURRENT_SLICE`
+## 当前 Slice
 
-Web review 当前 C0–C4 diff/evidence 后，才由用户 + ChatGPT Web/Work 决定是否进入
-`P1-V2-R1-D1-RAGGED-KV-WRITE-01`。
+`P1-V2-R1-D-RAGGED-GPU-EXECUTION-01` 已获批准并进入执行。D start HEAD 为
+`dc4287411704abc512f6cca3ca669c7d9ec254c5`；该 HEAD 相对 C final implementation commit
+只包含用户已有的解释性注释，未改变 C frozen behavior。
+
+`Next Allowed Action: WEB_REVIEW_CURRENT_SLICE`。D 已完成，等待当前 Slice review；不得自动进入 E。
