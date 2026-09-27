@@ -8,13 +8,13 @@
 P1 V1/Core = PASS / ACCEPTED / FROZEN
 Closed Slice = P1-V2-R1-C-EXECUTION-FOUNDATION-01
 Closed Slice Status = PASS / CLOSED
-Current Slice = P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
-Slice Status = PASS_PENDING_WEB_REVIEW
+Current Slice = P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01
+Slice Status = IN_PROGRESS / BLOCKED_BY_ENV
 Canonical V1 restore point = `cd444b72ceecb2496bf015baf8c18bf883151fa1`
 Current branch = `p1/v2-token-compaction-v026`
 C final implementation commit = `db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`
 D start HEAD = `dc4287411704abc512f6cca3ca669c7d9ec254c5`
-Next Allowed Action = WEB_REVIEW_CURRENT_SLICE
+Next Allowed Action = CONTINUE_CURRENT_SLICE_AFTER_ENV_FIX
 ```
 
 ## 已关闭的 C Slice

@@ -4,24 +4,19 @@
 Closed Slice: P1-V2-R1-C-EXECUTION-FOUNDATION-01
 Closed Slice Status: PASS / CLOSED
 C_FINAL_IMPLEMENTATION_COMMIT: db3cc1179f53e2dc8df2096ed17b5ec86ef033d3
-Current Slice: P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
-Slice Status: PASS_PENDING_WEB_REVIEW
-D_ACTUAL_START_HEAD: dc4287411704abc512f6cca3ca669c7d9ec254c5
+Current Slice: P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01
+Slice Status: IN_PROGRESS / BLOCKED_BY_ENV
 Branch: p1/v2-token-compaction-v026
 Worktree: DIRTY_SLICE_IN_PROGRESS
-Focused C0-C4/Dense: 32 passed
-Ragged state regression: 37 passed
-Dense attn_utils regression: 5 passed
 py_compile: PASS
-focused ruff: PASS
 git diff --check: PASS
-Real CUDA D execution/layout: 29 passed
-CPU/C/Ragged/Dense focused: 71 passed, 6 skipped
-Next Allowed Action: WEB_REVIEW_CURRENT_SLICE
-Proposed Next Action: Web review current D Slice; do not execute E.
+focused ruff --select F401: PASS
+focused pytest: BLOCKED (tblib missing)
+CLI/source import: BLOCKED (cbor2, zmq missing)
+A100 visible: YES
+Real request-level E evidence: NOT PRODUCED
+Next Allowed Action: CONTINUE_CURRENT_SLICE_AFTER_ENV_FIX
 ```
 
-V1/Core accepted restore point remains `cd444b72ceecb2496bf015baf8c18bf883151fa1` /
-`p1-v1-core-accepted`. This snapshot approves only the complete D Slice and does not approve production Ragged activation.
-
-权威状态见 `01-projects/project1-physical-kv-reclamation-vllm/PROJECT_STATE.md`。
+E Code Trace：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01-Code-Trace.md`。
+Raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-e-production-ragged-identity-01/`。

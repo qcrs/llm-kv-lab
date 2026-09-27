@@ -214,7 +214,16 @@ P1-V2-R1-C-EXECUTION-FOUNDATION-01：`32 passed` focused C0–C4/Dense suite、`
 
 P1-V2-R1-C-EXECUTION-FOUNDATION-01：Web architecture review 已完成，最终状态为 `PASS / CLOSED`；final implementation commit 为 `db3cc1179f53e2dc8df2096ed17b5ec86ef033d3`。
 
-## Current Slice — P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
+## Current Slice — P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01
+
+- E 状态：`PASS_PENDING_WEB_REVIEW`。
+- 已完成 Ragged vector allocation/transport、Worker mirror/StepViews staging、ForwardContext unified dispatch、V1 production runner 选择、Ragged physical cache reshape、success frontier commit 和 finish/free 基础路径；真实 A100 request-level closure 已获得。
+- 主要 source：`vllm/v1/core/kv_cache_manager.py`、`vllm/v1/core/sched/scheduler.py`、`vllm/v1/worker/gpu_model_runner.py`、`vllm/forward_context.py`、`vllm/model_executor/layers/attention/attention.py`。
+- Code Trace：`04-experiments/project1_kv_reclaim/notes/P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01-Code-Trace.md`。
+- raw evidence：`04-experiments/project1_kv_reclaim/raw/p1-v2-r1-e-production-ragged-identity-01/`。
+- `py_compile`、`git diff --check` 和 focused `ruff --select I,F,E9` 通过；focused pytest `35 passed, 7 skipped`；真实 A100 Qwen3-0.6B Ragged request 与 Dense identity parity 通过。Evidence：`raw/p1-v2-r1-e-production-ragged-identity-01/07-a100-v1-ragged-parity.log`。
+
+### Previous Slice — P1-V2-R1-D-RAGGED-GPU-EXECUTION-01
 
 - D 状态：`PASS_PENDING_WEB_REVIEW`；D-WRITE、D-DECODE、D-PREFILL-MIXED 均在 focused real-CUDA closure 中通过。
 - D actual start HEAD：`dc4287411704abc512f6cca3ca669c7d9ec254c5`；worktree 保留用户既有 HEAD delta，未创建新 commit。
@@ -266,7 +275,7 @@ rollback_point: p1-v1-core-accepted
 
 ## Exact Next Action
 
-D Slice 已完成，等待 `WEB_REVIEW_CURRENT_SLICE`；不得启用 production Ragged runtime 或进入 E。
+E Slice 已完成实现与本地验证；等待 Web review，不得进入下一 Slice。
 
 ## Next Allowed Action
 
@@ -274,8 +283,7 @@ WEB_REVIEW_CURRENT_SLICE
 
 ## Proposed Next Action
 
-完成 D 后固定回到 `WEB_REVIEW_CURRENT_SLICE`；建议 review 通过后再考虑
-`P1-V2-R1-E-PRODUCTION-RAGGED-IDENTITY-01`。V1 Core remains frozen；任何 V1 change
+由 Web review 审核 E production request-level closure；V1 Core remains frozen；任何 V1 change
 仍需 `P1-V1-CORE-REOPEN-XX`。
 
 ## State Write Authority
